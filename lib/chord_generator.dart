@@ -1,5 +1,4 @@
 import 'dart:math';
-import "package:audioplayers/audioplayers.dart";
 
 // Musiknoten
 const List<String> notes = [
@@ -47,41 +46,12 @@ List<String> generateScaleWithIntervals(String rootNote, List<int> intervals) {
   return scale;
 }
 
-class ChordPlayer {
-  List<AudioPlayer> players = [];
-  late String scale;
-  static Future<ChordPlayer> create(List<String> scale) async {
-    var chordPlayer = ChordPlayer();
-    await chordPlayer.init(scale);
-    return chordPlayer;
-  }
-
-  Future init(List<String> scale) async {
-    for (var note in scale) {
-      var newPlayer = AudioPlayer();
-      this.scale = scale.toString();
-      await newPlayer.setSourceAsset("$note.mp3");
-      await newPlayer.setReleaseMode(ReleaseMode.loop);
-      players.add(newPlayer);
-    }
-  }
-
-  Future resume() async {
-    for (var player in players) {
-      await player.resume();
-    }
-  }
-
-  Future pause() async {
-    for (var player in players) {
-      await player.pause();
-    }
-  }
-
-  Future dispose() async {
-    for (var player in players) {
-      await player.dispose();
-    }
-  }
+List<String> generateScale(int length, int maxInterval){
+  final intervals = generateRandomIntervals(
+    length,
+    maxInterval,
+  );
+  final rootNote = generateRandomRootNote();
+  var scale = generateScaleWithIntervals(rootNote, intervals);
+  return scale;
 }
-
