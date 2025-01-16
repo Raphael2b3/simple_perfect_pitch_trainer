@@ -6,6 +6,7 @@ import 'package:numberpicker/numberpicker.dart';
 
 import 'chord_generator.dart';
 import 'chord_player.dart';
+import 'chord_player_controller.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key, required this.title});
@@ -64,7 +65,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            ChordController(),
+            ChordPlayerController(),
             Column(
               children: [
                 Text('Number of Notes Played: ${numberOfNotes + 1}'),
