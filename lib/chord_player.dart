@@ -62,7 +62,9 @@ class _ChordControllerState extends ConsumerState<ChordController> {
   @override
   Widget build(BuildContext context) {
     var chordPlayer = ref.watch(chordPlayerProvider);
-
+    ref.listen(chordPlayerProvider, (old,newItem) {setState(() {
+      revealed = false;
+    }); } );
     if (revealed) {
       return Expanded(
         child: ListView(

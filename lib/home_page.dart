@@ -1,6 +1,8 @@
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 import 'chord_generator.dart';
 import 'chord_player.dart';
@@ -17,6 +19,40 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   double numberOfNotes = 5;
   double maxInterval = 3;
+  bool autoNext = false;
+  int skipTimeout = 30;
+
+  Timer? timer;
+
+  void reInitTimer() {
+    timer?.cancel();
+    timer = Timer.periodic(Duration(seconds: skipTimeout), (Timer t) async {
+      if (autoNext) {
+        await nextChord();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    // call a function every n seconds:
+    reInitTimer();
+
+    super.initState();
+  }
+
+  Future nextChord() async {
+    var chordPlayer = ref.read(chordPlayerProvider.notifier);
+    var scale = generateScale(numberOfNotes.toInt(), maxInterval.toInt());
+    await chordPlayer.loadNewPlayer(scale);
+    await chordPlayer.resume();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +99,45 @@ class _HomePageState extends ConsumerState<HomePage> {
                 ),
               ],
             ),
+            Column(
+              children: [
+                Text(
+                  autoNext
+                      ? "Automaticly skip after $skipTimeout seconds"
+                      : "Automaticly skip deactivated",
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Switch(
+                      value: autoNext,
+                      onChanged: (n) {
+                        setState(() {
+                          autoNext = n;
+                        });
+                      },
+                    ),
+                    if (autoNext) ...[
+                      NumberPicker(
+                        value: skipTimeout,
+                        minValue: 0,
+                        maxValue: 300,
+                        step: 1,
+                        haptics: true,
+                        onChanged:
+                            (value) =>
+                            setState(() {
+                              skipTimeout = value;
+                              reInitTimer();
+                            }),
+                      ),
+                      Text("seconds"),
+                    ],
+                  ],
+                ),
+              ],
+            ),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -78,16 +153,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   },
                   child: Text("Resume"),
                 ),
-                FilledButton(
-                  onPressed: () async {
-                    var scale = generateScale(
-                      numberOfNotes.toInt(),
-                      maxInterval.toInt(),
-                    );
-                    await chordPlayer.loadNewPlayer(scale);
-                  },
-                  child: Text("Next"),
-                ),
+                FilledButton(onPressed: nextChord, child: Text("Next")),
               ],
             ),
           ],
