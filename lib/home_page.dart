@@ -18,7 +18,7 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  double numberOfNotes = 5;
+  double numberOfNotes = 3;
   double maxInterval = 3;
   bool autoNext = false;
   int skipTimeout = 30;
@@ -66,76 +66,63 @@ class _HomePageState extends ConsumerState<HomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             ChordPlayerController(),
-            Column(
+            Column(children: [
+            Text('Number of Notes Played: ${numberOfNotes + 1}'),
+            Slider(
+              value: numberOfNotes,
+              max: 11,
+              divisions: 11,
+              min: 0,
+              label: (numberOfNotes + 1).round().toString(),
+              onChanged:
+                  (v) => setState(() {
+                    numberOfNotes = v;
+                  }),
+            ),
+            Text('Maximum Interval: $maxInterval'),
+            Slider(
+              value: maxInterval,
+              max: 12,
+              divisions: 11,
+              min: 1,
+              label: (maxInterval).round().toString(),
+              onChanged: (v) {
+                setState(() {
+                  maxInterval = v;
+                });
+              },
+            ),
+            Text(
+              autoNext
+                  ? "Automaticly skip after $skipTimeout seconds"
+                  : "Automaticly skip deactivated",
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text('Number of Notes Played: ${numberOfNotes + 1}'),
-                Slider(
-                  value: numberOfNotes,
-                  max: 11,
-                  divisions: 11,
-                  min: 0,
-                  label: (numberOfNotes + 1).round().toString(),
-                  onChanged: (v) {
+                Switch(
+                  value: autoNext,
+                  onChanged: (n) {
                     setState(() {
-                      numberOfNotes = v;
+                      autoNext = n;
                     });
                   },
                 ),
-              ],
-            ),
-            Column(
-              children: [
-                Text('Maximum Interval: $maxInterval'),
-                Slider(
-                  value: maxInterval,
-                  max: 12,
-                  divisions: 11,
-                  min: 1,
-                  label: (maxInterval).round().toString(),
-                  onChanged: (v) {
-                    setState(() {
-                      maxInterval = v;
-                    });
-                  },
-                ),
-              ],
-            ),
-            Column(
-              children: [
-                Text(
-                  autoNext
-                      ? "Automaticly skip after $skipTimeout seconds"
-                      : "Automaticly skip deactivated",
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Switch(
-                      value: autoNext,
-                      onChanged: (n) {
-                        setState(() {
-                          autoNext = n;
-                        });
-                      },
-                    ),
-                    if (autoNext) ...[
-                      NumberPicker(
-                        value: skipTimeout,
-                        minValue: 0,
-                        maxValue: 300,
-                        step: 1,
-                        haptics: true,
-                        onChanged:
-                            (value) =>
-                            setState(() {
-                              skipTimeout = value;
-                              reInitTimer();
-                            }),
-                      ),
-                      Text("seconds"),
-                    ],
-                  ],
-                ),
+                if (autoNext) ...[
+                  NumberPicker(
+                    value: skipTimeout,
+                    minValue: 0,
+                    maxValue: 300,
+                    step: 1,
+                    haptics: true,
+                    onChanged:
+                        (value) => setState(() {
+                          skipTimeout = value;
+                          reInitTimer();
+                        }),
+                  ),
+                  const Text("seconds"),
+                ],
               ],
             ),
 
@@ -146,20 +133,21 @@ class _HomePageState extends ConsumerState<HomePage> {
                   onPressed: () async {
                     await chordPlayer.pause();
                   },
-                  child: Text("Pause"),
+                  child: const Text("Pause"),
                 ),
                 FilledButton(
                   onPressed: () async {
                     chordPlayer.resume();
                   },
-                  child: Text("Resume"),
+                  child: const Text("Resume"),
                 ),
-                FilledButton(onPressed: nextChord, child: Text("Next")),
+                FilledButton(onPressed: nextChord, child: const Text("Next")),
               ],
             ),
+            ],)
           ],
         ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
