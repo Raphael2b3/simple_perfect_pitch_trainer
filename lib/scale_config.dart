@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,7 +7,15 @@ part "scale_config.g.dart";
 
 @riverpod
 class ScaleConfigManager extends _$ScaleConfigManager {
-  Map<String, List<String>> configs = {};
+  Map<String, List<String>> customConfigs = {};
+  Map<String, bool> activeConfigs = {};
+  bool isActive(String key) {
+    return activeConfigs[key] ?? false;
+  }
+  void setActivate(String key, bool value) {
+    activeConfigs[key] = value;
+  }
+
   static const String _storageKey = 'scale_config_manager';
 
   /// List of undeletable config keys
@@ -51,7 +57,7 @@ class ScaleConfigManager extends _$ScaleConfigManager {
     return await _loadConfigs();
   }
 
-  /// Loads the configs from local storage.
+  /// Loads the customConfigs from local storage.
   Future<Map<String, List<String>>> _loadConfigs() async {
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString(_storageKey);
@@ -60,43 +66,43 @@ class ScaleConfigManager extends _$ScaleConfigManager {
       final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
 
       // Convert dynamic map to Map<String, List<String>>
-      configs = jsonMap.map(
+      customConfigs = jsonMap.map(
         (key, value) =>
             MapEntry(key, List<String>.from(value as List<dynamic>)),
       );
     }
 
-    return configs;
+    return customConfigs;
   }
 
-  /// Updates a specific key with new values and stores the updated configs in local storage.
+  /// Updates a specific key with new values and stores the updated customConfigs in local storage.
   Future<void> updateConfig(String key, List<String> values) async {
-    configs[key] = values;
+    customConfigs[key] = values;
     await _saveConfigs();
   }
 
-  /// Deletes a specific key from the configs and updates local storage, unless it is undeletable.
+  /// Deletes a specific key from the customConfigs and updates local storage, unless it is undeletable.
   Future<void> deleteConfig(String key) async {
-    if (configs.keys.contains(key)) {
+    if (customConfigs.keys.contains(key)) {
       throw Exception('Cannot delete undeletable config: $key');
     }
-    configs.remove(key);
+    customConfigs.remove(key);
     await _saveConfigs();
   }
 
   /// Checks if a name is already used in any config.
   bool isNameTaken(String name) {
-    return configs.values.any((list) => list.contains(name));
+    return customConfigs.values.any((list) => list.contains(name));
   }
 
-  /// Stores the configs into local storage.
+  /// Stores the customConfigs into local storage.
   Future<void> _saveConfigs() async {
     final prefs = await SharedPreferences.getInstance();
-    final jsonString = jsonEncode(configs);
+    final jsonString = jsonEncode(customConfigs);
     await prefs.setString(_storageKey, jsonString);
-    state = await AsyncValue.guard(()async => configs);
+    state = await AsyncValue.guard(()async => customConfigs);
   }
 
-  /// Provides the current configs.
-  Map<String, List<String>> get currentConfigs => configs;
+  /// Provides the current customConfigs.
+  Map<String, List<String>> get currentConfigs => customConfigs;
 }

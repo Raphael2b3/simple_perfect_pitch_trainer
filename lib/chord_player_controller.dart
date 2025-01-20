@@ -21,33 +21,31 @@ class _ChordPlayerControllerState extends ConsumerState<ChordPlayerController> {
       revealed = false;
     }); } );
     if (revealed) {
-      return Expanded(
-        child: ListView(
-          children: [
-            ...chordPlayer.value!.entries.map((e) {
-              var player = e.value;
-              var note = e.key;
-              var isActive = player.state == PlayerState.playing;
-              if (isActive) {
-                return FilledButton(
-                  onPressed: () async {
-                    await player.stop();
-                    setState(() {});
-                  },
-                  child: Text("$note Playing"),
-                );
-              } else {
-                return OutlinedButton(
-                  onPressed: () async {
-                    await player.resume();
-                    setState(() {});
-                  },
-                  child: Text("$note Paused"),
-                );
-              }
-            }),
-          ],
-        ),
+      return ListView(
+        children: [
+          ...chordPlayer.value!.entries.map((e) {
+            var player = e.value;
+            var note = e.key;
+            var isActive = player.state == PlayerState.playing;
+            if (isActive) {
+              return FilledButton(
+                onPressed: () async {
+                  await player.stop();
+                  setState(() {});
+                },
+                child: Text("$note Playing"),
+              );
+            } else {
+              return OutlinedButton(
+                onPressed: () async {
+                  await player.resume();
+                  setState(() {});
+                },
+                child: Text("$note Paused"),
+              );
+            }
+          }),
+        ],
       );
     } else {
       return FilledButton(

@@ -67,79 +67,78 @@ class _HomePageState extends ConsumerState<HomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             ChordPlayerController(),
-            Expanded(
-              child: Column(
-                children: [
-                  Text('Number of Notes Played: ${numberOfNotes + 1}'),
-                  Slider(
-                    value: numberOfNotes,
-                    max: 11,
-                    divisions: 11,
-                    min: 0,
-                    label: (numberOfNotes + 1).round().toString(),
-                    onChanged:
-                        (v) => setState(() {
-                          numberOfNotes = v;
-                        }),
-                  ),
-                  ScalePicker(),
-                  Text(
-                    autoNext
-                        ? "Automaticly skip after $skipTimeout seconds"
-                        : "Automaticly skip deactivated",
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Switch(
-                        value: autoNext,
-                        onChanged: (n) {
-                          setState(() {
-                            autoNext = n;
-                          });
-                        },
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text('Number of Notes Played: ${numberOfNotes + 1}'),
+                Slider(
+                  value: numberOfNotes,
+                  max: 11,
+                  divisions: 11,
+                  min: 0,
+                  label: (numberOfNotes + 1).round().toString(),
+                  onChanged:
+                      (v) => setState(() {
+                        numberOfNotes = v;
+                      }),
+                ),
+                ScalePicker(),
+                Text(
+                  autoNext
+                      ? "Automaticly skip after $skipTimeout seconds"
+                      : "Automaticly skip deactivated",
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Switch(
+                      value: autoNext,
+                      onChanged: (n) {
+                        setState(() {
+                          autoNext = n;
+                        });
+                      },
+                    ),
+                    if (autoNext) ...[
+                      NumberPicker(
+                        value: skipTimeout,
+                        minValue: 1,
+                        maxValue: 300,
+                        step: 1,
+                        haptics: true,
+                        onChanged:
+                            (value) => setState(() {
+                              skipTimeout = value;
+                              reInitTimer();
+                            }),
                       ),
-                      if (autoNext) ...[
-                        NumberPicker(
-                          value: skipTimeout,
-                          minValue: 1,
-                          maxValue: 300,
-                          step: 1,
-                          haptics: true,
-                          onChanged:
-                              (value) => setState(() {
-                                skipTimeout = value;
-                                reInitTimer();
-                              }),
-                        ),
-                        const Text("seconds"),
-                      ],
+                      const Text("seconds"),
                     ],
-                  ),
+                  ],
+                ),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      FilledButton(
-                        onPressed: () async {
-                          await chordPlayer.pause();
-                        },
-                        child: const Text("Pause"),
-                      ),
-                      FilledButton(
-                        onPressed: () async {
-                          chordPlayer.resume();
-                        },
-                        child: const Text("Resume"),
-                      ),
-                      FilledButton(
-                        onPressed: nextChord,
-                        child: const Text("Next"),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    FilledButton(
+                      onPressed: () async {
+                        await chordPlayer.pause();
+                      },
+                      child: const Text("Pause"),
+                    ),
+                    FilledButton(
+                      onPressed: () async {
+                        chordPlayer.resume();
+                      },
+                      child: const Text("Resume"),
+                    ),
+                    FilledButton(
+                      onPressed: nextChord,
+                      child: const Text("Next"),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
         ),
