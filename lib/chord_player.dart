@@ -1,5 +1,4 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -13,6 +12,7 @@ class ChordPlayer extends _$ChordPlayer {
     Map<String, AudioPlayer> players = {};
     return players;
   }
+  List<List<String>> history = [];
 
   Future loadNewPlayer(List<String> scale) async {
     await dispose();
@@ -24,6 +24,7 @@ class ChordPlayer extends _$ChordPlayer {
       await newPlayer.setReleaseMode(ReleaseMode.loop);
       newPlayers[note] = newPlayer;
     }
+    history.add(scale);
     state = await AsyncValue.guard(() async {
       return newPlayers;
     });

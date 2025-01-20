@@ -1,11 +1,11 @@
 {
-    "name": "impro_king",
-    "short_name": "impro_king",
+    "name": "simple_perfect_pitch_trainer",
+    "short_name": "simple_perfect_pitch_trainer",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "Generate chords from random scales in random pitches in random inversions, to help adapting to chord changes by ear.",
+    "description": "An app that helps you develope perfect pitch",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

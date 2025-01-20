@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="impro_king"
+        android:label="simple_perfect_pitch_trainer"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

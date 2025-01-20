@@ -1,5 +1,5 @@
-name: impro_king
-description: "Generate chords from random scales in random pitches in random inversions, to help adapting to chord changes by ear."
+name: simple_perfect_pitch_trainer
+description: "An app that helps you develop perfect pitch"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

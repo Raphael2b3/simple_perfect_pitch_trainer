@@ -1,6 +1,6 @@
-# impro_king
+# simple_perfect_pitch_trainer
 
-Generate chords from random scales in random pitches in random inversions, to help adapting to chord changes by ear.
+An app that helps you develope perfect pitch
 
 ## Getting Started
 
