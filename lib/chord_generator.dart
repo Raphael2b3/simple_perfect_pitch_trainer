@@ -33,16 +33,16 @@ class ChordGenerator extends _$ChordGenerator {
   }
 
   List<String> getNewNotes() {
-    var test = ref.read(scaleConfigManagerProvider.notifier);
+    var scaleManager = ref.read(scaleConfigManagerProvider.notifier);
     var rootNoteIndex = random.nextInt(notes.length);
 
-    var scale = test.getRandomScale();
+    var scale = scaleManager.getRandomScale();
     var out = ["${notes[rootNoteIndex]}1"];
     for (var i = 0; i < numberOfExtraNotes; i++) {
       var j = random.nextInt(scale.length);
       var interval = scale[j];
       var nextNoteIndex = (rootNoteIndex + interval) % notes.length;
-      var register = 1+random.nextInt(2);
+      var register = 1+random.nextInt(3);
       out.add("${notes[nextNoteIndex]}$register");
     }
     return out;

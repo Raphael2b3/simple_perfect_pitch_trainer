@@ -61,7 +61,7 @@ class ScaleConfigManager extends _$ScaleConfigManager {
     "Melodic Minor": ["1", "2", "b3", "4", "5", "6", "j7"],
     "Harmonic Minor": ["1", "2", "b3", "4", "5", "b6", "j7"],
   };
-
+  static const List<int> fallbackIntervals = [0];
   Map<String, List<String>> customConfigs = {};
   Map<String, bool> activeConfigs = {};
 
@@ -76,6 +76,9 @@ class ScaleConfigManager extends _$ScaleConfigManager {
   }
 
   List<int> getRandomScale() {
+    if (activeConfigs.isEmpty) {
+      return fallbackIntervals;
+    }
     var keys = activeConfigs.keys.where((key) => activeConfigs[key]!);
     // get activated scales
     var scales = keys.map((e) {

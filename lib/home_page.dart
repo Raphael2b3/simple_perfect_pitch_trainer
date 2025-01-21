@@ -22,6 +22,7 @@ class _HomePageState extends ConsumerState<HomePage> {
   bool autoNext = false;
   int skipTimeout = 15;
   Timer? timer;
+
   void reInitTimer() {
     timer?.cancel();
     timer = Timer.periodic(Duration(seconds: skipTimeout), (Timer t) async {
@@ -47,8 +48,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   Future nextChord() async {
     var chordPlayer = ref.read(chordPlayerProvider.notifier);
-    //var scale = generateScale(numberOfExtraNotes.toInt(), maxInterval.toInt());
-    //await chordPlayer.loadNewPlayer(scale);
+    await chordPlayer.loadNewPlayer();
     await chordPlayer.resume();
   }
 
@@ -76,10 +76,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                     min: 0,
                     label: (numberOfExtraNotes + 1).round().toString(),
                     onChanged: (v) {
-
-                      setState(() {
                       chordGenerator.numberOfExtraNotes = v;
-                      });
+                      setState(() {});
                     },
                   ),
                   ScalePicker(),

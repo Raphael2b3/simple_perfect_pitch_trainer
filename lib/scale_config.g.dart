@@ -7,7 +7,7 @@ part of 'scale_config.dart';
 // **************************************************************************
 
 String _$scaleConfigManagerHash() =>
-    r'cf692dbac29fb8870fa83b508c3518b7603d2f1c';
+    r'f9c7410d51b27dfff9ab128b68d696a633752f89';
 
 /// See also [ScaleConfigManager].
 @ProviderFor(ScaleConfigManager)
