@@ -18,13 +18,7 @@ class _ScalePickerState extends ConsumerState<ScalePicker> {
   bool expanded = false;
   bool editorActive = false;
 
-  void onSelectAll() {
-    var manager = getManager();
-
-    manager.activeConfigs = Map.fromEntries(
-      manager.customConfigs.keys.map((e) => MapEntry(e, true)),
-    );
-  }
+  void onSelectAll() => getManager().selectAll();
 
   void onDeselectAll() => getManager().deselectAll();
 
@@ -33,8 +27,6 @@ class _ScalePickerState extends ConsumerState<ScalePicker> {
   });
 
   void onSave() {
-    var scaleConfigManger = ref.read(scaleConfigManagerProvider.notifier);
-    //
     setState(() {
       expanded = false;
     });

@@ -1,59 +1,51 @@
 import 'dart:math';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:simple_perfect_pitch_trainer/scale_config.dart';
 
+part 'chord_generator.g.dart';
 
+@riverpod
+class ChordGenerator extends _$ChordGenerator {
+  static Random random = Random();
 
-// Musiknoten
-const List<String> notes = [
-  'C',
-  'C#',
-  'D',
-  'D#',
-  'E',
-  'F',
-  'F#',
-  'G',
-  'G#',
-  'A',
-  'A#',
-  'B',
-];
+  // Musiknoten
+  static const List<String> notes = [
+    'C',
+    'C#',
+    'D',
+    'D#',
+    'E',
+    'F',
+    'F#',
+    'G',
+    'G#',
+    'A',
+    'A#',
+    'B',
+  ];
 
-// Zufällige Intervalle erstellen
-List<int> generateRandomIntervals(int length, int maxInterval) {
-  final random = Random();
-  return List.generate(
-    length,
-    (_) => random.nextInt(maxInterval) + 1,
-  ); // Intervalle: 1 bis 3 Halbtöne
-}
+  double numberOfExtraNotes = 1;
 
-// Zufälligen Grundton generieren
-String generateRandomRootNote() {
-  final random = Random();
-  return notes[random.nextInt(notes.length)];
-}
+  @override
+  List<String> build() {
 
-// Berechne die Noten und Frequenzen basierend auf Intervallen und Grundton
-List<String> generateScaleWithIntervals(String rootNote, List<int> intervals) {
-  List<String> scale = ["${rootNote}1"];
-  int currentIndex = notes.indexOf(rootNote);
-  String suffix = "2";
-  for (var step in intervals) {
-    if (currentIndex + step >= notes.length) suffix = "3";
-    currentIndex = (currentIndex + step) % notes.length;
-    String noteName = notes[currentIndex];
-    scale.add(noteName + suffix);
+    return getNewNotes();
   }
-  print('Skala: $scale');
-  return scale;
-}
 
-List<String> generateScale(int length, int maxInterval){
-  final intervals = generateRandomIntervals(
-    length,
-    maxInterval,
-  );
-  final rootNote = generateRandomRootNote();
-  var scale = generateScaleWithIntervals(rootNote, intervals);
-  return scale;
+  List<String> getNewNotes() {
+    var test = ref.read(scaleConfigManagerProvider.notifier);
+    var rootNoteIndex = random.nextInt(notes.length);
+
+    var scale = test.getRandomScale();
+    var out = ["${notes[rootNoteIndex]}1"];
+    for (var i = 0; i < numberOfExtraNotes; i++) {
+      var j = random.nextInt(scale.length);
+      var interval = scale[j];
+      var nextNoteIndex = (rootNoteIndex + interval) % notes.length;
+      var register = 1+random.nextInt(2);
+      out.add("${notes[nextNoteIndex]}$register");
+    }
+    return out;
+  }
+
 }

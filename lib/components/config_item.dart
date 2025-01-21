@@ -41,7 +41,7 @@ class _ConfigItemState extends ConsumerState<ConfigItem> {
         Expanded(child: Text(widget.name)),
         if (isCustom) ...[
           IconButton(onPressed: () {}, icon: Icon(Icons.edit)),
-          IconButton(onPressed: () {}, icon: Icon(Icons.delete)),
+          IconButton(onPressed: () {manager.deleteConfig(widget.name);}, icon: Icon(Icons.delete)),
         ],
       ],
     );

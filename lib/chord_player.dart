@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:simple_perfect_pitch_trainer/chord_generator.dart';
 
 part 'chord_player.g.dart';
 
@@ -14,9 +15,11 @@ class ChordPlayer extends _$ChordPlayer {
   }
   List<List<String>> history = [];
 
-  Future loadNewPlayer(List<String> scale) async {
+  Future loadNewPlayer() async {
     await dispose();
+    var generator = ref.read(chordGeneratorProvider.notifier);
     Map<String, AudioPlayer> newPlayers = {};
+    var scale = generator.getNewNotes();
     for (var note in scale) {
       var newPlayer = AudioPlayer();
       await newPlayer.setPlayerMode(PlayerMode.lowLatency);

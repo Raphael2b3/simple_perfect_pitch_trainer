@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -28,6 +29,7 @@ class ScaleConfig {
 @riverpod
 class ScaleConfigManager extends _$ScaleConfigManager {
   static const String _storageKey = 'scale_config_manager';
+  static Random random = Random();
   static const Map<String, List<String>> defaultConfigs = {
     'Chromatic': [
       "1",
@@ -63,6 +65,28 @@ class ScaleConfigManager extends _$ScaleConfigManager {
   Map<String, List<String>> customConfigs = {};
   Map<String, bool> activeConfigs = {};
 
+  List<String> scaleByName(String name) {
+    return defaultConfigs[name] ?? customConfigs[name] ?? ["1"];
+  }
+
+  List<int> scaleToIntervalList(List<String> scale) {
+    var chromatic = defaultConfigs["Chromatic"]!;
+
+    return scale.map((e) => chromatic.indexOf(e)).toList();
+  }
+
+  List<int> getRandomScale() {
+    var keys = activeConfigs.keys.where((key) => activeConfigs[key]!);
+    // get activated scales
+    var scales = keys.map((e) {
+      var scale = scaleByName(e); // find scale by name
+      // convert scale to integer offsets
+      return scaleToIntervalList(scale);
+    });
+    var i = random.nextInt(scales.length);
+    return scales.elementAt(i);
+  }
+
   bool isActive(String key) => activeConfigs[key] ?? false;
 
   bool isCustom(String key) => customConfigs.containsKey(key);
@@ -77,15 +101,16 @@ class ScaleConfigManager extends _$ScaleConfigManager {
     state = AsyncValue.data({...activeConfigs});
   }
 
-  void selectAll(){
-    activeConfigs = Map.fromEntries(
-      customConfigs.keys.map((e) => MapEntry(e, true)),
-    );
+  void selectAll() {
+    var keys = activeConfigs.keys.toList();
+    for (var key in keys) {
+      activeConfigs[key] = true;
+    }
     _saveConfigs();
     state = AsyncValue.data({...activeConfigs});
   }
 
-  void deselectAll(){
+  void deselectAll() {
     var keys = activeConfigs.keys.toList();
     for (var key in keys) {
       activeConfigs[key] = false;
@@ -111,7 +136,6 @@ class ScaleConfigManager extends _$ScaleConfigManager {
       );
 
       activeConfigs = Map<String, bool>.from(jsonMap['activeConfigs'] ?? {});
-
     }
 
     for (var key in [...defaultConfigs.keys, ...customConfigs.keys]) {

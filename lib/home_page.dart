@@ -19,13 +19,9 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  double numberOfNotes = 1;
-  double maxInterval = 3;
   bool autoNext = false;
-  int skipTimeout = 30;
-
+  int skipTimeout = 15;
   Timer? timer;
-
   void reInitTimer() {
     timer?.cancel();
     timer = Timer.periodic(Duration(seconds: skipTimeout), (Timer t) async {
@@ -51,15 +47,16 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   Future nextChord() async {
     var chordPlayer = ref.read(chordPlayerProvider.notifier);
-    var scale = generateScale(numberOfNotes.toInt(), maxInterval.toInt());
-    await chordPlayer.loadNewPlayer(scale);
+    //var scale = generateScale(numberOfExtraNotes.toInt(), maxInterval.toInt());
+    //await chordPlayer.loadNewPlayer(scale);
     await chordPlayer.resume();
   }
 
   @override
   Widget build(BuildContext context) {
     var chordPlayer = ref.read(chordPlayerProvider.notifier);
-
+    var chordGenerator = ref.watch(chordGeneratorProvider.notifier);
+    var numberOfExtraNotes = chordGenerator.numberOfExtraNotes;
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
       body: Center(
@@ -71,17 +68,19 @@ class _HomePageState extends ConsumerState<HomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Text('Number of Notes Played: ${numberOfNotes + 1}'),
+                  Text('Number of Notes Played: ${numberOfExtraNotes + 1}'),
                   Slider(
-                    value: numberOfNotes,
+                    value: numberOfExtraNotes,
                     max: 11,
                     divisions: 11,
                     min: 0,
-                    label: (numberOfNotes + 1).round().toString(),
-                    onChanged:
-                        (v) => setState(() {
-                          numberOfNotes = v;
-                        }),
+                    label: (numberOfExtraNotes + 1).round().toString(),
+                    onChanged: (v) {
+
+                      setState(() {
+                      chordGenerator.numberOfExtraNotes = v;
+                      });
+                    },
                   ),
                   ScalePicker(),
                   Text(
