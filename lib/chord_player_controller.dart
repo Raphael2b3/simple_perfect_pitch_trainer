@@ -8,7 +8,8 @@ class ChordPlayerController extends ConsumerStatefulWidget {
   const ChordPlayerController({super.key});
 
   @override
-  ConsumerState<ChordPlayerController> createState() => _ChordPlayerControllerState();
+  ConsumerState<ChordPlayerController> createState() =>
+      _ChordPlayerControllerState();
 }
 
 class _ChordPlayerControllerState extends ConsumerState<ChordPlayerController> {
@@ -17,9 +18,11 @@ class _ChordPlayerControllerState extends ConsumerState<ChordPlayerController> {
   @override
   Widget build(BuildContext context) {
     var chordPlayer = ref.watch(chordPlayerProvider);
-    ref.listen(chordPlayerProvider, (old,newItem) {setState(() {
-      revealed = false;
-    }); } );
+    ref.listen(chordPlayerProvider, (old, newItem) {
+      setState(() {
+        revealed = false;
+      });
+    });
     if (revealed) {
       return ListView(
         children: [

@@ -12,13 +12,53 @@ class ScalePicker extends ConsumerStatefulWidget {
 }
 
 class _ScalePickerState extends ConsumerState<ScalePicker> {
+  ScaleConfigManager getManager() =>
+      ref.read(scaleConfigManagerProvider.notifier);
+
   bool expanded = false;
+  bool editorActive = false;
+
+  void onSelectAll() {
+    var manager = getManager();
+
+    manager.activeConfigs = Map.fromEntries(
+      manager.customConfigs.keys.map((e) => MapEntry(e, true)),
+    );
+  }
+
+  void onDeselectAll() => getManager().deselectAll();
+
+  void onAddNew() => setState(() {
+    editorActive = true;
+  });
+
+  void onSave() {
+    var scaleConfigManger = ref.read(scaleConfigManagerProvider.notifier);
+    //
+    setState(() {
+      expanded = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    var scale_config = ref.watch(scaleConfigManagerProvider);
-    var scale_config_manager = ref.read(scaleConfigManagerProvider.notifier);
-
+    var scaleConfig = ref.watch(scaleConfigManagerProvider);
+    if (editorActive) {
+      return ScaleEditor(
+        onSave: (name, scale) {
+          var manager = getManager();
+          manager.updateConfig(name, scale);
+          setState(() {
+            editorActive = false;
+          });
+        },
+        onCancel: () {
+          setState(() {
+            editorActive = false;
+          });
+        },
+      );
+    }
     if (expanded) {
       return Expanded(
         child: Column(
@@ -26,16 +66,28 @@ class _ScalePickerState extends ConsumerState<ScalePicker> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                TextButton(onPressed: () {}, child: Text("Select All")),
-                TextButton(onPressed: () {}, child: Text("Deselect All")),
-                TextButton(onPressed: () {}, child: Text("Add New")),
-                FilledButton(onPressed: () {}, child: Text("Save")),
+                TextButton(
+                  onPressed: onSelectAll,
+                  child: const Text("Select All"),
+                ),
+                TextButton(
+                  onPressed: onDeselectAll,
+                  child: const Text("Deselect All"),
+                ),
+                TextButton(onPressed: onAddNew, child: const Text("Add New")),
+                FilledButton(
+                  onPressed:
+                      () => setState(() {
+                        expanded = false;
+                      }),
+                  child: const Text("Save"),
+                ),
               ],
             ),
             Expanded(
               child: ListView(
                 children: [
-                  ...scale_config_manager.undeletableConfigs.keys.map(
+                  ...?scaleConfig.value?.keys.map(
                     (key) => ConfigItem(name: key),
                   ),
                 ],
@@ -45,6 +97,13 @@ class _ScalePickerState extends ConsumerState<ScalePicker> {
         ),
       );
     }
-    return FilledButton(onPressed: (){}, child: Text("Select Scales"));
+    return FilledButton(
+      onPressed: () {
+        setState(() {
+          expanded = true;
+        });
+      },
+      child: Text("Select Scales"),
+    );
   }
 }

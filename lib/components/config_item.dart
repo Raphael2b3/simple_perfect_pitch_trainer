@@ -20,12 +20,13 @@ class _ConfigItemState extends ConsumerState<ConfigItem> {
     super.initState();
     var manager = ref.read(scaleConfigManagerProvider.notifier);
     active = manager.isActive(widget.name);
-    isCustom = manager.customConfigs.keys.contains(widget.name);
+    isCustom = manager.isCustom(widget.name);
   }
 
   @override
   Widget build(BuildContext context) {
-    var manager = ref.read(scaleConfigManagerProvider.notifier);
+    var manager = ref.watch(scaleConfigManagerProvider.notifier);
+    active = manager.isActive(widget.name);
     return Row(
       children: [
         Checkbox(

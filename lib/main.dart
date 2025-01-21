@@ -13,13 +13,13 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Impro King',
+    return  MaterialApp(
+      title: 'Simple Perfect Pitch Trainer',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomePage(title: 'Impro King'),
+      home: const HomePage(title: 'Simple Perfect Pitch Trainer'),
     );
   }
 }
