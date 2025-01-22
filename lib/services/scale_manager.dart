@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'number_of_extra_notes.dart';
+
 part "scale_manager.g.dart";
 
 class ScaleConfig {
@@ -70,7 +72,6 @@ class ScaleManager extends _$ScaleManager {
 
   @override
   Future<Map<String, bool>> build() async {
-    ref.keepAlive();
     return await _loadConfigs();
   }
 
@@ -193,11 +194,16 @@ class ScaleManager extends _$ScaleManager {
     return history[i];
   }
 
-  List<int> getNextNotes(int numberOfExtraNotes) {
+
+  List<int> getNextNotes() {
     if (historyIndex <= 0) {
-      var newNotes = getNewNotes(numberOfExtraNotes);
+      var newNotes = getNewNotes();
       history.add(newNotes);
-      historyIndex == 0;
+      if (history.length > 50) {
+        history.removeAt(0);
+        print("Removed oldest history entry");
+      }
+      historyIndex = 0;
       return newNotes;
     }
     var i = history.length - (historyIndex - 1);
@@ -205,14 +211,16 @@ class ScaleManager extends _$ScaleManager {
     return history[i];
   }
 
-  List<int> getNewNotes(int numberOfExtraNotes) {
+  List<int> getNewNotes() {
+    var numberOfExtraNotes = ref.read(numberOfExtraNotesProvider);
     var setOfNotes = getRandomSetOfNotes();
     int rootNote = random.nextInt(12);
     var out = [rootNote];
-    for (var i = 0; i < numberOfExtraNotes; i++) {
+    while (out.length < min(1+numberOfExtraNotes, setOfNotes.length * 3)) {
       var randomNote = setOfNotes[random.nextInt(setOfNotes.length)];
-      var randomOctave = random.nextInt(3)*12;
-      out.add(rootNote+randomOctave+randomNote);
+      var randomOctave = random.nextInt(3) * 12;
+      var newNote = rootNote + randomOctave + randomNote;
+      if (!out.contains(newNote)) out.add(newNote);
     }
     return out;
   }

@@ -5,18 +5,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:simple_perfect_pitch_trainer/services/scale_manager.dart';
 
-part 'settings_provider.g.dart';
+part 'number_of_extra_notes.g.dart';
 
 // A shared state that can be accessed by multiple widgets at the same time.
 @riverpod
-class SettingsProvider extends _$SettingsProvider {
+class NumberOfExtraNotes extends _$NumberOfExtraNotes {
 
   @override
-  int build() {
+  double build() {
     return 1;
   }
 
-  set numberOfExtraNotes(double value) {
-    state = value.toInt();
-  }
+  set numberOfExtraNotes(double value) => state = value;
+
 }
