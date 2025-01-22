@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:simple_perfect_pitch_trainer/scale_config.dart';
+import 'package:simple_perfect_pitch_trainer/services/scale_manager.dart';
 
 class ScaleEditor extends ConsumerStatefulWidget {
   final void Function(String name, List<String> scale) onSave;
@@ -99,7 +99,7 @@ class _ScaleEditorState extends ConsumerState<ScaleEditor> {
               children: [
                 TextFormField(
                   validator: (value) {
-                    var manager = ref.read(scaleConfigManagerProvider.notifier);
+                    var manager = ref.read(scaleManagerProvider.notifier);
                     if (value == null || value.isEmpty) {
                       return 'Please enter some text';
                     }

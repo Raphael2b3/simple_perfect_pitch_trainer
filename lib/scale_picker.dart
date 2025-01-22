@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:simple_perfect_pitch_trainer/components/config_item.dart';
-import 'package:simple_perfect_pitch_trainer/scale_config.dart';
+import 'package:simple_perfect_pitch_trainer/components/scale_item.dart';
+import 'package:simple_perfect_pitch_trainer/services/scale_manager.dart';
 import 'package:simple_perfect_pitch_trainer/scale_editor.dart';
 
 class ScalePicker extends ConsumerStatefulWidget {
@@ -12,8 +12,8 @@ class ScalePicker extends ConsumerStatefulWidget {
 }
 
 class _ScalePickerState extends ConsumerState<ScalePicker> {
-  ScaleConfigManager getManager() =>
-      ref.read(scaleConfigManagerProvider.notifier);
+  ScaleManager getManager() =>
+      ref.read(scaleManagerProvider.notifier);
 
   bool expanded = false;
   bool editorActive = false;
@@ -34,7 +34,7 @@ class _ScalePickerState extends ConsumerState<ScalePicker> {
 
   @override
   Widget build(BuildContext context) {
-    var scaleConfig = ref.watch(scaleConfigManagerProvider);
+    var scaleConfig = ref.watch(scaleManagerProvider);
     if (editorActive) {
       return ScaleEditor(
         onSave: (name, scale) {
@@ -80,7 +80,7 @@ class _ScalePickerState extends ConsumerState<ScalePicker> {
               child: ListView(
                 children: [
                   ...?scaleConfig.value?.keys.map(
-                    (key) => ConfigItem(name: key),
+                    (key) => ScaleItem(name: key),
                   ),
                 ],
               ),

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-part "scale_config.g.dart";
+part "scale_manager.g.dart";
 
 class ScaleConfig {
   final String name;
@@ -27,9 +27,12 @@ class ScaleConfig {
 }
 
 @riverpod
-class ScaleConfigManager extends _$ScaleConfigManager {
-  static const String _storageKey = 'scale_config_manager';
+class ScaleManager extends _$ScaleManager {
+  static const String _storageKey = 'scale_manager';
   static Random random = Random();
+  final List<List<int>> history = [];
+  int historyIndex = 0; // higher value means further back in history
+
   static const Map<String, List<String>> defaultConfigs = {
     'Chromatic': [
       "1",
@@ -65,29 +68,10 @@ class ScaleConfigManager extends _$ScaleConfigManager {
   Map<String, List<String>> customConfigs = {};
   Map<String, bool> activeConfigs = {};
 
-  List<String> scaleByName(String name) {
-    return defaultConfigs[name] ?? customConfigs[name] ?? ["1"];
-  }
-
-  List<int> scaleToIntervalList(List<String> scale) {
-    var chromatic = defaultConfigs["Chromatic"]!;
-
-    return scale.map((e) => chromatic.indexOf(e)).toList();
-  }
-
-  List<int> getRandomScale() {
-    if (activeConfigs.isEmpty) {
-      return fallbackIntervals;
-    }
-    var keys = activeConfigs.keys.where((key) => activeConfigs[key]!);
-    // get activated scales
-    var scales = keys.map((e) {
-      var scale = scaleByName(e); // find scale by name
-      // convert scale to integer offsets
-      return scaleToIntervalList(scale);
-    });
-    var i = random.nextInt(scales.length);
-    return scales.elementAt(i);
+  @override
+  Future<Map<String, bool>> build() async {
+    ref.keepAlive();
+    return await _loadConfigs();
   }
 
   bool isActive(String key) => activeConfigs[key] ?? false;
@@ -97,33 +81,6 @@ class ScaleConfigManager extends _$ScaleConfigManager {
   /// Checks if a name is already used in any config.
   bool isNameTaken(String name) =>
       customConfigs.keys.contains(name) || defaultConfigs.keys.contains(name);
-
-  void setActivate(String key, bool value) {
-    activeConfigs[key] = value;
-    _saveConfigs();
-    state = AsyncValue.data({...activeConfigs});
-  }
-
-  void selectAll() {
-    var keys = activeConfigs.keys.toList();
-    for (var key in keys) {
-      activeConfigs[key] = true;
-    }
-    _saveConfigs();
-    state = AsyncValue.data({...activeConfigs});
-  }
-
-  void deselectAll() {
-    var keys = activeConfigs.keys.toList();
-    for (var key in keys) {
-      activeConfigs[key] = false;
-    }
-    _saveConfigs();
-    state = AsyncValue.data({...activeConfigs});
-  }
-
-  @override
-  Future<Map<String, bool>> build() async => await _loadConfigs();
 
   /// Loads the customConfigs and activeConfigs from local storage.
   Future<Map<String, bool>> _loadConfigs() async {
@@ -152,7 +109,7 @@ class ScaleConfigManager extends _$ScaleConfigManager {
   /// Updates a specific key with new values and stores the updated customConfigs in local storage.
   Future<void> updateConfig(String key, List<String> values) async {
     if (defaultConfigs.containsKey(key)) {
-      throw Exception('Cannot update undeletable config: $key');
+      throw Exception('Cannot update config: $key');
     }
     customConfigs[key] = values;
     await _saveConfigs();
@@ -161,7 +118,7 @@ class ScaleConfigManager extends _$ScaleConfigManager {
   /// Deletes a specific key from the customConfigs and updates local storage, unless it is undeletable.
   Future<void> deleteConfig(String key) async {
     if (defaultConfigs.containsKey(key)) {
-      throw Exception('Cannot delete undeletable config: $key');
+      throw Exception('Cannot delete config: $key');
     }
     customConfigs.remove(key);
     activeConfigs.remove(key);
@@ -176,6 +133,87 @@ class ScaleConfigManager extends _$ScaleConfigManager {
       'activeConfigs': activeConfigs,
     });
     await prefs.setString(_storageKey, jsonString);
-    state = await AsyncValue.guard(() async => activeConfigs);
+    state = AsyncValue.data(activeConfigs);
+  }
+
+  List<String> scaleByName(String name) {
+    return defaultConfigs[name] ?? customConfigs[name] ?? ["1"];
+  }
+
+  List<int> scaleToIntervalList(List<String> scale) {
+    var chromatic = defaultConfigs["Chromatic"]!;
+    return scale.map((e) => chromatic.indexOf(e)).toList();
+  }
+
+  List<int> getRandomSetOfNotes() {
+    var keys = activeConfigs.keys.where((key) => activeConfigs[key]!);
+    // get activated scales
+    if (keys.isEmpty) {
+      return fallbackIntervals;
+    }
+    var scales = keys.map((e) {
+      var scale = scaleByName(e); // find scale by name
+      return scaleToIntervalList(scale);
+    });
+    var i = random.nextInt(scales.length);
+
+    return scales.elementAt(i);
+  }
+
+  void activate(String key, bool value) {
+    activeConfigs[key] = value;
+    _saveConfigs();
+    state = AsyncValue.data({...activeConfigs});
+  }
+
+  void selectAll() {
+    var keys = activeConfigs.keys.toList();
+    for (var key in keys) {
+      activeConfigs[key] = true;
+    }
+    _saveConfigs();
+    state = AsyncValue.data({...activeConfigs});
+  }
+
+  void deselectAll() {
+    var keys = activeConfigs.keys.toList();
+    for (var key in keys) {
+      activeConfigs[key] = false;
+    }
+    _saveConfigs();
+    state = AsyncValue.data({...activeConfigs});
+  }
+
+  List<int> getPreviousNotes() {
+    var i = history.length - (historyIndex + 1);
+    if (i < 0) {
+      return history[0];
+    }
+    historyIndex++;
+    return history[i];
+  }
+
+  List<int> getNextNotes(int numberOfExtraNotes) {
+    if (historyIndex <= 0) {
+      var newNotes = getNewNotes(numberOfExtraNotes);
+      history.add(newNotes);
+      historyIndex == 0;
+      return newNotes;
+    }
+    var i = history.length - (historyIndex - 1);
+    historyIndex--;
+    return history[i];
+  }
+
+  List<int> getNewNotes(int numberOfExtraNotes) {
+    var setOfNotes = getRandomSetOfNotes();
+    int rootNote = random.nextInt(12);
+    var out = [rootNote];
+    for (var i = 0; i < numberOfExtraNotes; i++) {
+      var randomNote = setOfNotes[random.nextInt(setOfNotes.length)];
+      var randomOctave = random.nextInt(3)*12;
+      out.add(rootNote+randomOctave+randomNote);
+    }
+    return out;
   }
 }

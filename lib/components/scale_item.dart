@@ -1,38 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:simple_perfect_pitch_trainer/scale_config.dart';
+import 'package:simple_perfect_pitch_trainer/services/scale_manager.dart';
 
-class ConfigItem extends ConsumerStatefulWidget {
+class ScaleItem extends ConsumerStatefulWidget {
   final String name;
 
-  const ConfigItem({super.key, required this.name});
+  const ScaleItem({super.key, required this.name});
 
   @override
-  ConsumerState<ConfigItem> createState() => _ConfigItemState();
+  ConsumerState<ScaleItem> createState() => _ScaleItemState();
 }
 
-class _ConfigItemState extends ConsumerState<ConfigItem> {
+class _ScaleItemState extends ConsumerState<ScaleItem> {
   bool active = false;
   late bool isCustom;
 
   @override
   void initState() {
     super.initState();
-    var manager = ref.read(scaleConfigManagerProvider.notifier);
+    var manager = ref.read(scaleManagerProvider.notifier);
     active = manager.isActive(widget.name);
     isCustom = manager.isCustom(widget.name);
   }
 
   @override
   Widget build(BuildContext context) {
-    var manager = ref.watch(scaleConfigManagerProvider.notifier);
+    var manager = ref.watch(scaleManagerProvider.notifier);
     active = manager.isActive(widget.name);
     return Row(
       children: [
         Checkbox(
           value: active,
           onChanged: (v) {
-            manager.setActivate(widget.name, v ?? false);
+            manager.activate(widget.name, v ?? false);
             setState(() {
               active = v ?? false;
             });
