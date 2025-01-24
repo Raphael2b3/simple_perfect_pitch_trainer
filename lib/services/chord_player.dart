@@ -1,8 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:simple_perfect_pitch_trainer/services/number_of_extra_notes.dart';
-import 'package:simple_perfect_pitch_trainer/services/scale_manager.dart';
+import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_manager.dart';
 
 part 'chord_player.g.dart';
 
@@ -75,11 +74,6 @@ class ChordPlayer extends _$ChordPlayer {
     }
     ref.notifyListeners();
   }
-
-  void notifyListeners() {
-    ref.notifyListeners();
-  }
-
 
   Future previous() async {
     var notes = ref.read(scaleManagerProvider.notifier).getPreviousNotes();

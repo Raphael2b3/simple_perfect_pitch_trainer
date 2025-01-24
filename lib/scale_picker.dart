@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:simple_perfect_pitch_trainer/components/scale_item.dart';
-import 'package:simple_perfect_pitch_trainer/services/scale_manager.dart';
+import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_manager.dart';
 import 'package:simple_perfect_pitch_trainer/scale_editor.dart';
 
 class ScalePicker extends ConsumerStatefulWidget {

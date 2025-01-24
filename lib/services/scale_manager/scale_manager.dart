@@ -3,37 +3,18 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_history.dart';
+import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_storage.dart';
 
-import 'number_of_extra_notes.dart';
+import '../number_of_extra_notes.dart';
 
 part "scale_manager.g.dart";
 
-class ScaleConfig {
-  final String name;
-  final List<String> values;
-  final bool active;
-
-  ScaleConfig(this.name, this.values, this.active);
-
-  factory ScaleConfig.fromJson(Map<String, dynamic> json) {
-    return ScaleConfig(
-      json['name'] as String,
-      List<String>.from(json['values'] as List<dynamic>),
-      json['active'] as bool,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {'name': name, 'values': values, 'active': active};
-  }
-}
-
 @riverpod
 class ScaleManager extends _$ScaleManager {
-  static const String _storageKey = 'scale_manager';
   static Random random = Random();
-  final List<List<int>> history = [];
-  int historyIndex = 0; // higher value means further back in history
+  ScaleStorage scaleStorage = ScaleStorage();
+  ScaleHistory scaleHistory = ScaleHistory();
 
   static const Map<String, List<String>> defaultConfigs = {
     'Chromatic': [
@@ -67,75 +48,26 @@ class ScaleManager extends _$ScaleManager {
     "Harmonic Minor": ["1", "2", "b3", "4", "5", "b6", "j7"],
   };
   static const List<int> fallbackIntervals = [0];
-  Map<String, List<String>> customConfigs = {};
-  Map<String, bool> activeConfigs = {};
+
+  get activeConfigs => scaleStorage.activeConfigs;
+  get customConfigs => scaleStorage.customConfigs;
 
   @override
-  Future<Map<String, bool>> build() async {
-    return await _loadConfigs();
-  }
-
-  bool isActive(String key) => activeConfigs[key] ?? false;
-
-  bool isCustom(String key) => customConfigs.containsKey(key);
-
-  /// Checks if a name is already used in any config.
-  bool isNameTaken(String name) =>
-      customConfigs.keys.contains(name) || defaultConfigs.keys.contains(name);
-
-  /// Loads the customConfigs and activeConfigs from local storage.
-  Future<Map<String, bool>> _loadConfigs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString(_storageKey);
-
-    if (jsonString != null) {
-      final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
-
-      customConfigs = (jsonMap['customConfigs'] as Map<String, dynamic>).map(
-        (key, value) =>
-            MapEntry(key, List<String>.from(value as List<dynamic>)),
-      );
-
-      activeConfigs = Map<String, bool>.from(jsonMap['activeConfigs'] ?? {});
-    }
-
+  Future build() async {
+    await scaleStorage.init();
+    // load active states that are not stored initially or when app data is cleared
     for (var key in [...defaultConfigs.keys, ...customConfigs.keys]) {
       if (!activeConfigs.containsKey(key)) {
         activeConfigs[key] = false;
       }
     }
-    return activeConfigs;
   }
 
-  /// Updates a specific key with new values and stores the updated customConfigs in local storage.
-  Future<void> updateConfig(String key, List<String> values) async {
-    if (defaultConfigs.containsKey(key)) {
-      throw Exception('Cannot update config: $key');
-    }
-    customConfigs[key] = values;
-    await _saveConfigs();
-  }
-
-  /// Deletes a specific key from the customConfigs and updates local storage, unless it is undeletable.
-  Future<void> deleteConfig(String key) async {
-    if (defaultConfigs.containsKey(key)) {
-      throw Exception('Cannot delete config: $key');
-    }
-    customConfigs.remove(key);
-    activeConfigs.remove(key);
-    await _saveConfigs();
-  }
-
-  /// Stores the customConfigs and activeConfigs into local storage.
-  Future<void> _saveConfigs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = jsonEncode({
-      'customConfigs': customConfigs,
-      'activeConfigs': activeConfigs,
-    });
-    await prefs.setString(_storageKey, jsonString);
-    state = AsyncValue.data(activeConfigs);
-  }
+  bool isActive(String key) => activeConfigs[key] ?? false;
+  bool isCustom(String key) => customConfigs.containsKey(key);
+  /// Checks if a name is already used in any config.
+  bool isNameTaken(String name) =>
+      customConfigs.keys.contains(name) || defaultConfigs.keys.contains(name);
 
   List<String> scaleByName(String name) {
     return defaultConfigs[name] ?? customConfigs[name] ?? ["1"];
@@ -194,7 +126,6 @@ class ScaleManager extends _$ScaleManager {
     return history[i];
   }
 
-
   List<int> getNextNotes() {
     if (historyIndex <= 0) {
       var newNotes = getNewNotes();
@@ -216,7 +147,7 @@ class ScaleManager extends _$ScaleManager {
     var setOfNotes = getRandomSetOfNotes();
     int rootNote = random.nextInt(12);
     var out = [rootNote];
-    while (out.length < min(1+numberOfExtraNotes, setOfNotes.length * 3)) {
+    while (out.length < min(1 + numberOfExtraNotes, setOfNotes.length * 3)) {
       var randomNote = setOfNotes[random.nextInt(setOfNotes.length)];
       var randomOctave = random.nextInt(3) * 12;
       var newNote = rootNote + randomOctave + randomNote;

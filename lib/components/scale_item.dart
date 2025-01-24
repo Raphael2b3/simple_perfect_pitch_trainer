@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:simple_perfect_pitch_trainer/services/scale_manager.dart';
+import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_manager.dart';
 
 class ScaleItem extends ConsumerStatefulWidget {
   final String name;

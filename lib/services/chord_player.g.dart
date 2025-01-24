@@ -6,7 +6,7 @@ part of 'chord_player.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$chordPlayerHash() => r'bb5520212c7553ba5d5bc43653624b6a6d11270b';
+String _$chordPlayerHash() => r'b7a6c5820a338b609f0a75d79e21ceec9792f03a';
 
 /// See also [ChordPlayer].
 @ProviderFor(ChordPlayer)

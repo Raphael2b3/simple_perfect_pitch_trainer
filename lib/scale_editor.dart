@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:simple_perfect_pitch_trainer/services/scale_manager.dart';
+import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_manager.dart';
 
 class ScaleEditor extends ConsumerStatefulWidget {
   final void Function(String name, List<String> scale) onSave;
