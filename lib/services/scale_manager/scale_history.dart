@@ -1,14 +1,3 @@
-import 'dart:convert';
-import 'dart:math';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_storage.dart';
-
-import '../number_of_extra_notes.dart';
-
-
-
 class ScaleHistory{
   final List<List<int>> history = [];
   int historyIndex = 0; // higher value means further back in history

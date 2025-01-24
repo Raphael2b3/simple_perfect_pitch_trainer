@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_history.dart';
+import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_manager.dart';
 import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_storage.dart';
 
 
@@ -12,7 +13,6 @@ part "task_generator.g.dart";
 @riverpod
 class TaskGenerator extends _$TaskGenerator {
   static Random random = Random();
-  ScaleStorage scaleStorage = ScaleStorage();
   ScaleHistory scaleHistory = ScaleHistory();
   int numberOfExtraNotes = 1;
 
@@ -47,25 +47,12 @@ class TaskGenerator extends _$TaskGenerator {
     "Melodic Minor": ["1", "2", "b3", "4", "5", "6", "j7"],
     "Harmonic Minor": ["1", "2", "b3", "4", "5", "b6", "j7"],
   };
-  static const List<int> fallbackIntervals = [0];
+  static const List<int> fallbackIntervals = [0,1,2,3,4,5,6,7,8,9,10,11];
 
-  get activeConfigs => scaleStorage.activeConfigs;
-  get customConfigs => scaleStorage.customConfigs;
+  get scaleManager => ref.read(scaleManagerProvider.notifier);
 
   @override
-  Future build() async {
-    await scaleStorage.init();
-    // load active states that are not stored initially or when app data is cleared
-    for (var key in [...defaultConfigs.keys, ...customConfigs.keys]) {
-      if (!activeConfigs.containsKey(key)) {
-        activeConfigs[key] = false;
-      }
-    }
-  }
-
-  List<String> scaleByName(String name) {
-    return defaultConfigs[name] ?? customConfigs[name] ?? ["1"];
-  }
+  Future build() async {}
 
   List<int> scaleToIntervalList(List<String> scale) {
     var chromatic = defaultConfigs["Chromatic"]!;
@@ -73,6 +60,21 @@ class TaskGenerator extends _$TaskGenerator {
   }
 
   List<int> getRandomSetOfNotes() {
+    var keys = activeConfigs.keys.where((key) => activeConfigs[key]!);
+    // get activated scales
+    if (keys.isEmpty) {
+      return fallbackIntervals;
+    }
+    var scales = keys.map((e) {
+      var scale = scaleByName(e); // find scale by name
+      return scaleToIntervalList(scale);
+    });
+    var i = random.nextInt(scales.length);
+
+    return scales.elementAt(i);
+  }
+  List<int> getRandomSetOfNotes() {
+    var activeConfigs = scaleManager.activeConfigs;
     var keys = activeConfigs.keys.where((key) => activeConfigs[key]!);
     // get activated scales
     if (keys.isEmpty) {
@@ -98,6 +100,21 @@ class TaskGenerator extends _$TaskGenerator {
   }
 
   List<int> getNewNotes() {
+    var setOfNotes = getRandomSetOfNotes();
+    int rootNote = random.nextInt(12);
+    var out = [rootNote];
+    while (out.length < min(1 + numberOfExtraNotes, setOfNotes.length * 3)) {
+      var randomNote = setOfNotes[random.nextInt(setOfNotes.length)];
+      var randomOctave = random.nextInt(3) * 12;
+      var newNote = rootNote + randomOctave + randomNote;
+      if (!out.contains(newNote)) out.add(newNote);
+    }
+    return out;
+  }
+
+
+  List<int> getNewNotes() {
+    var numberOfExtraNotes = ref.read(numberOfExtraNotesProvider);
     var setOfNotes = getRandomSetOfNotes();
     int rootNote = random.nextInt(12);
     var out = [rootNote];
