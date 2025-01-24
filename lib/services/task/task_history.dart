@@ -1,8 +1,10 @@
-class ScaleHistory{
-  final List<List<int>> history = [];
+import 'package:simple_perfect_pitch_trainer/services/task/task.dart';
+
+class TaskHistory {
+  final List<Task> history = [];
   int historyIndex = 0; // higher value means further back in history
 
-  List<int> getPreviousNotes() {
+  Task getPreviousTask() {
     var i = history.length - (historyIndex + 1);
     if (i < 0) {
       return history[0];
@@ -11,8 +13,7 @@ class ScaleHistory{
     return history[i];
   }
 
-
-  List<int>? getNextNotes() {
+  Task? getNextTask() {
     if (historyIndex <= 0) {
       return null;
     }
@@ -21,10 +22,10 @@ class ScaleHistory{
     return history[i];
   }
 
-  void addNotes(List<int> notes) {
-    history.add(notes);
+  void addTask(Task task) {
+    history.add(task);
     historyIndex = 0;
-    history.add(notes);
+    history.add(task);
     if (history.length > 50) {
       history.removeAt(0);
       print("Removed oldest history entry");

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'package:simple_perfect_pitch_trainer/services/chord_player.dart';
+import 'package:simple_perfect_pitch_trainer/services/chord_player/chord_player_controller.dart';
 import 'package:simple_perfect_pitch_trainer/services/number_of_extra_notes.dart';
 
 import '../scale_picker.dart';
