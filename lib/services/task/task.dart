@@ -1,5 +1,4 @@
 class Task {
-  bool revealed = false;
   final List<int> notes;
   final List<String> solution;
 

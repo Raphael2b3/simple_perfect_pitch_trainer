@@ -9,26 +9,27 @@ import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_storag
 
 part "scale_manager.g.dart";
 
-@riverpod
+@Riverpod(keepAlive: true)
 class ScaleManager extends _$ScaleManager {
   static Random random = Random();
   ScaleStorage scaleStorage = ScaleStorage();
 
   @override
   Future<Map<String, ScaleConfig>> build() async {
+
     await scaleStorage.init();
     return scaleStorage.scaleConfigs!;
   }
 
   /// Checks if a name is already used in any config.
-  bool isNameTaken(String name) => state.value!.keys.contains(name);
+  bool isNameTaken(String name) => state.value?.keys.contains(name) ?? false;
 
-  Future updateScale(ScaleConfig newConfig, String? oldName) async {
+  Future updateScale(ScaleConfig newConfig, {String? oldName}) async {
     if (oldName == newConfig.name) oldName = null;
 
-    var overriddenConfig = state.value![newConfig.name];
+    var overriddenConfig = state.value![newConfig.name]!;
 
-    if (!overriddenConfig!.isCustom) return;
+    if (!overriddenConfig.isCustom) return;
     if (oldName != null && isNameTaken(newConfig.name)) return;
 
     await scaleStorage.updateScaleConfig(newConfig);
@@ -52,7 +53,7 @@ class ScaleManager extends _$ScaleManager {
   }
 
   void selectAll() {
-    for (var scaleConfig in state.value!.values) {
+    for (var scaleConfig in state.value?.values ?? <ScaleConfig>[]) {
       scaleConfig.isActive = true;
     }
     ref.notifyListeners();

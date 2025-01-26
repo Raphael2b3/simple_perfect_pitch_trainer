@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simple_perfect_pitch_trainer/services/settings.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task_history.dart';
 import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_manager.dart';
@@ -29,7 +30,6 @@ class TaskGenerator extends _$TaskGenerator {
   ];
 
   TaskHistory taskHistory = TaskHistory();
-  int numberOfExtraNotes = 1;
 
   static const List<int> fallbackIntervals = [
     0,
@@ -96,6 +96,7 @@ class TaskGenerator extends _$TaskGenerator {
   }
 
   Task getNewTask() {
+    var numberOfExtraNotes = ref.read(settingsProvider).numberOfExtraNotes;
     var setOfNotes = getRandomSetOfIntervals();
     int rootNote = random.nextInt(12);
     var notes = [rootNote];

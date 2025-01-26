@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:simple_perfect_pitch_trainer/components/scale_item.dart';
+import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_config.dart';
 import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_manager.dart';
 import 'package:simple_perfect_pitch_trainer/scale_editor.dart';
 
@@ -12,8 +13,7 @@ class ScalePicker extends ConsumerStatefulWidget {
 }
 
 class _ScalePickerState extends ConsumerState<ScalePicker> {
-  ScaleManager getManager() =>
-      ref.read(scaleManagerProvider.notifier);
+  ScaleManager getManager() => ref.read(scaleManagerProvider.notifier);
 
   bool expanded = false;
   bool editorActive = false;
@@ -34,24 +34,18 @@ class _ScalePickerState extends ConsumerState<ScalePicker> {
 
   @override
   Widget build(BuildContext context) {
-    var scaleConfig = ref.watch(scaleManagerProvider);
     if (editorActive) {
       return ScaleEditor(
-        onSave: (name, scale) {
-          var manager = getManager();
-          manager.updateConfig(name, scale);
-          setState(() {
-            editorActive = false;
-          });
-        },
-        onCancel: () {
-          setState(() {
-            editorActive = false;
-          });
-        },
+        onSave: (String name, List<String> scale) {},
+        onCancel: () {},
       );
     }
     if (expanded) {
+      var scales = ref.watch(scaleManagerProvider);
+      if (scales.isLoading || scales.isRefreshing || scales.isReloading || !scales.value!.isNotEmpty) {
+        return Text("Loading...");
+      }
+
       return Expanded(
         child: Column(
           children: [
@@ -77,12 +71,19 @@ class _ScalePickerState extends ConsumerState<ScalePicker> {
               ],
             ),
             Expanded(
-              child: ListView(
-                children: [
-                  ...?scaleConfig.value?.keys.map(
-                    (key) => ScaleItem(name: key),
-                  ),
-                ],
+              child: ListView.builder(
+                itemCount: scales.value!.length,
+                itemBuilder:
+                    (context, index) => ScaleItem(
+                      config:
+                          scales.value!.values.elementAt(index) ??
+                          ScaleConfig(
+                            name: 'Fallback',
+                            isActive: true,
+                            isCustom: true,
+                            values: [],
+                          ),
+                    ),
               ),
             ),
           ],

@@ -50,14 +50,14 @@ class ChordPlayerController extends _$ChordPlayerController {
   }
 
   Future resume() async {
-    for (var player in state.value!.playerList) {
+    for (var player in state.value?.playerList ?? []) {
       await player.resume();
     }
     ref.notifyListeners();
   }
 
   Future pause() async {
-    for (var player in state.value!.playerList) {
+    for (var player in state.value?.playerList ?? []) {
       await player.pause();
     }
     ref.notifyListeners();
@@ -74,9 +74,8 @@ class ChordPlayerController extends _$ChordPlayerController {
   }
 
   Future dispose() async {
-    for (var player in state.value!.values) {
+    for (var player in state.value?.playerList ?? []) {
       await player.dispose();
     }
-    state.value!.clear();
   }
 }

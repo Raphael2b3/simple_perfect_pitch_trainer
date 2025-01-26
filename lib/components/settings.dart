@@ -3,10 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:simple_perfect_pitch_trainer/scale_picker.dart';
 import 'package:simple_perfect_pitch_trainer/services/chord_player/chord_player_controller.dart';
-import 'package:simple_perfect_pitch_trainer/services/number_of_extra_notes.dart';
-
-import '../scale_picker.dart';
+import 'package:simple_perfect_pitch_trainer/services/settings.dart';
 
 class Settings extends ConsumerStatefulWidget {
   const Settings({super.key});
@@ -24,7 +23,7 @@ class _SettingsState extends ConsumerState<Settings> {
     timer?.cancel();
     timer = Timer.periodic(Duration(seconds: skipTimeout), (Timer t) async {
       if (autoNext) {
-        var player = ref.read(chordPlayerProvider.notifier);
+        var player = ref.read(chordPlayerControllerProvider.notifier);
         player.forward();
       }
     });
@@ -45,7 +44,9 @@ class _SettingsState extends ConsumerState<Settings> {
 
   @override
   Widget build(BuildContext context) {
-    var numberOfExtraNotes = ref.watch(numberOfExtraNotesProvider);
+    var numberOfExtraNotes = ref.watch(
+      settingsProvider.select((v) => v.numberOfExtraNotes),
+    );
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -58,8 +59,8 @@ class _SettingsState extends ConsumerState<Settings> {
             min: 0,
             label: (numberOfExtraNotes + 1).round().toString(),
             onChanged: (v) {
-              ref.read(numberOfExtraNotesProvider.notifier).numberOfExtraNotes =
-                  v;
+              ref.read(settingsProvider.notifier).numberOfExtraNotes = v;
+              v;
             },
           ),
           ScalePicker(),

@@ -61,7 +61,7 @@ class ScaleStorage {
                   ScaleConfig(
                     isActive: activeConfigs[key] ?? false,
                     name: key,
-                    values: customConfigs[key]!,
+                    values: _defaultConfigs[key]!,
                     isCustom: false,
                   ),
                 ),
@@ -73,9 +73,13 @@ class ScaleStorage {
 
   /// Loads the customConfigs and activeConfigs from local storage.
   Future<(Map<String, List<String>>, Map<String, bool>)> _loadConfigs() async {
+    print("Loading Configs");
+
     final prefs = await SharedPreferences.getInstance();
+    print(prefs);
     final jsonString = prefs.getString(_storageKey);
-    final Map<String, dynamic> jsonMap = jsonDecode(jsonString!);
+    print(jsonString);
+    final Map<String, dynamic> jsonMap = jsonDecode(jsonString ?? "{}");
     var customConfigs =
         ((jsonMap['customConfigs'] ?? {}) as Map<String, dynamic>).map(
           (key, value) =>

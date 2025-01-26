@@ -10,7 +10,7 @@ class PlayerController extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var isPlaying = ref.watch(
-      chordPlayerControllerProvider.select((e) => e.value?.isPlaying),
+      chordPlayerControllerProvider.select((e) => e.value?.isPlaying ?? false),
     );
 
     return Row(
@@ -39,14 +39,14 @@ class PlayerController extends ConsumerWidget {
                 () async =>
                     await ref
                         .read(chordPlayerControllerProvider.notifier)
-                        .forward(),
+                        .resume(),
             child: const Text("Play"),
           ),
         TextButton(
-          onPressed: () async {
-            await ref.read(chordPlayerProvider.notifier).forward();
-            ref.read(solutionStateProvider.notifier).revealed = false;
-          },
+          onPressed:
+              () async =>
+                  await ref
+                      .read(chordPlayerControllerProvider.notifier).forward(),
           child: const Text("Next"),
         ),
       ],
