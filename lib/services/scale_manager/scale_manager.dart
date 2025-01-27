@@ -16,7 +16,6 @@ class ScaleManager extends _$ScaleManager {
 
   @override
   Future<Map<String, ScaleConfig>> build() async {
-
     await scaleStorage.init();
     return scaleStorage.scaleConfigs!;
   }

@@ -39,6 +39,7 @@ class ScaleStorage {
   Map<String, ScaleConfig>? scaleConfigs;
 
   Future init() async {
+    print("stopp");
     var (customConfigs, activeConfigs) = await _loadConfigs();
     var newScaleConfigs = Map.fromEntries(
       customConfigs.keys
@@ -76,9 +77,13 @@ class ScaleStorage {
     print("Loading Configs");
 
     final prefs = await SharedPreferences.getInstance();
-    print(prefs);
+
     final jsonString = prefs.getString(_storageKey);
-    print(jsonString);
+
+    if (jsonString == null) {
+      return (<String, List<String>>{}, <String, bool>{});
+    }
+
     final Map<String, dynamic> jsonMap = jsonDecode(jsonString ?? "{}");
     var customConfigs =
         ((jsonMap['customConfigs'] ?? {}) as Map<String, dynamic>).map(
@@ -86,22 +91,22 @@ class ScaleStorage {
               MapEntry(key, List<String>.from(value as List<dynamic>)),
         );
     var activeConfigs = Map<String, bool>.from(jsonMap['activeConfigs'] ?? {});
+
     return (customConfigs, activeConfigs);
   }
 
   /// Updates a specific key with new values and stores the updated customConfigs in local storage.
   Future<void> updateScaleConfig(ScaleConfig newConfig) async {
     var old = scaleConfigs![newConfig.name];
-    if (old!=null && !old.isCustom) return;
+    if (old != null && !old.isCustom) return;
     scaleConfigs![newConfig.name] = newConfig;
     await _saveConfigs();
-
   }
 
   /// Deletes a specific key from the customConfigs and updates local storage, unless it is undeletable.
   Future<void> deleteConfig(String key) async {
     var old = scaleConfigs![key];
-    if (old!=null && !old.isCustom) return;
+    if (old != null && !old.isCustom) return;
     scaleConfigs!.remove(key);
     await _saveConfigs();
   }

@@ -17,9 +17,9 @@ class Solution extends ConsumerWidget {
     if (revealed) {
       return Expanded(
         child: ListView.builder(
-          itemCount: task.value?.solution.length,
+          itemCount: task.solution.length,
           itemBuilder: (c, i) {
-            var solutionName = task.value?.solution[i];
+            var solutionName = task.solution[i];
             var isPlaying = ref.watch(
               chordPlayerControllerProvider.select((v) {
                 return v.value?.playerList[i].state == PlayerState.playing;

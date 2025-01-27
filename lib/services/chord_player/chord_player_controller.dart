@@ -29,6 +29,7 @@ class ChordPlayerController extends _$ChordPlayerController {
 
   @override
   FutureOr<ChordPlayer?> build() async {
+    ref.keepAlive();
     ref.onDispose(() async => await state.value?.dispose());
     return null;
   }
@@ -41,12 +42,11 @@ class ChordPlayerController extends _$ChordPlayerController {
       }).toList();
 
   Future updatePlayers(Task task) async {
-    await state.value?.dispose();
+    if (state.value != null) await state.value!.dispose();
     state = await AsyncValue.guard(
       () async => await ChordPlayer.create(notesToFilenames(task.notes)),
     );
     await resume();
-
   }
 
   Future resume() async {
@@ -71,11 +71,5 @@ class ChordPlayerController extends _$ChordPlayerController {
   Future forward() async {
     var task = ref.read(taskGeneratorProvider.notifier).getNextTask();
     await updatePlayers(task);
-  }
-
-  Future dispose() async {
-    for (var player in state.value?.playerList ?? []) {
-      await player.dispose();
-    }
   }
 }

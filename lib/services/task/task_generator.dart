@@ -11,7 +11,7 @@ import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_storag
 
 part "task_generator.g.dart";
 
-@riverpod
+@Riverpod(keepAlive: true)
 class TaskGenerator extends _$TaskGenerator {
   static Random random = Random();
   static const List<String> intervalList = [
@@ -64,7 +64,7 @@ class TaskGenerator extends _$TaskGenerator {
   get scaleManager => ref.read(scaleManagerProvider.notifier);
 
   @override
-  Future<Task> build() async {
+  Task build()  {
     return getNewTask();
   }
 
@@ -73,7 +73,7 @@ class TaskGenerator extends _$TaskGenerator {
   }
 
   List<int> getRandomSetOfIntervals() {
-    var configs = ref.read(scaleManagerProvider);
+    var configs = ref.read(scaleManagerProvider).whenData(data: (){},);
     var actives =
         configs.value!.values.where((value) => value.isActive).toList();
     // get activated scales
@@ -84,7 +84,11 @@ class TaskGenerator extends _$TaskGenerator {
     return scaleToIntervalList(actives[i].values);
   }
 
-  Task getPreviousTask() => taskHistory.getPreviousTask();
+  Task getPreviousTask() {
+    var pre= taskHistory.getPreviousTask();
+    state = pre;
+    return pre;
+  }
 
   Task getNextTask() {
     var task = taskHistory.getNextTask();
@@ -92,6 +96,7 @@ class TaskGenerator extends _$TaskGenerator {
       task = getNewTask();
       taskHistory.addTask(task);
     }
+    state = task;
     return task;
   }
 
