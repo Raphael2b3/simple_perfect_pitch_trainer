@@ -70,6 +70,8 @@ class ChordPlayerController extends _$ChordPlayerController {
 
   Future forward() async {
     var task = ref.read(taskGeneratorProvider.notifier).getNextTask();
-    await updatePlayers(task);
+    if (task != null) {
+      await updatePlayers(task);
+    }
   }
 }

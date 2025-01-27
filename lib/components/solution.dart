@@ -12,8 +12,13 @@ class Solution extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     var task = ref.watch(taskGeneratorProvider);
-    var ui_manager = ref.read(uIStateControllerProvider.notifier);
-    var revealed = ref.watch(uIStateControllerProvider.select((v)=>v.solutionRevealed));
+    var uiManager = ref.read(uiStateControllerProvider.notifier);
+    var revealed = ref.watch(uiStateControllerProvider.select((v)=>v.solutionRevealed));
+    if (task == null) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
     if (revealed) {
       return Expanded(
         child: ListView.builder(
@@ -45,7 +50,7 @@ class Solution extends ConsumerWidget {
         child: Center(
           child: FilledButton(
             onPressed: () {
-              ui_manager.updateUIState(UIState(solutionRevealed: true));
+              uiManager.updateUIState(UIState(solutionRevealed: true));
             },
             child: const Text("Reveal Solution"),
           ),

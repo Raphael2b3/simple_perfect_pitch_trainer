@@ -9,7 +9,7 @@ class UIState{
 }
 // A shared state that can be accessed by multiple widgets at the same time.
 @riverpod
-class UIStateController extends _$UIStateController {
+class UiStateController extends _$UiStateController {
 
   @override
   UIState build() {

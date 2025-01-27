@@ -64,7 +64,7 @@ class TaskGenerator extends _$TaskGenerator {
   get scaleManager => ref.read(scaleManagerProvider.notifier);
 
   @override
-  Task build()  {
+  Task? build() {
     return getNewTask();
   }
 
@@ -72,8 +72,11 @@ class TaskGenerator extends _$TaskGenerator {
     return scale.map((e) => intervalList.indexOf(e)).toList();
   }
 
-  List<int> getRandomSetOfIntervals() {
-    var configs = ref.read(scaleManagerProvider).whenData(data: (){},);
+  List<int>? getRandomSetOfIntervals() {
+    var configs = ref.watch(scaleManagerProvider);
+    if (!configs.hasValue) {
+      return null;
+    }
     var actives =
         configs.value!.values.where((value) => value.isActive).toList();
     // get activated scales
@@ -85,27 +88,36 @@ class TaskGenerator extends _$TaskGenerator {
   }
 
   Task getPreviousTask() {
-    var pre= taskHistory.getPreviousTask();
+    var pre = taskHistory.getPreviousTask();
     state = pre;
     return pre;
   }
 
-  Task getNextTask() {
+  Task? getNextTask() {
     var task = taskHistory.getNextTask();
     if (task == null) {
       task = getNewTask();
+      if (task == null) {
+        return null;
+      }
       taskHistory.addTask(task);
     }
     state = task;
     return task;
   }
 
-  Task getNewTask() {
+  Task? getNewTask() {
     var numberOfExtraNotes = ref.read(settingsProvider).numberOfExtraNotes;
     var setOfNotes = getRandomSetOfIntervals();
+    if (setOfNotes == null) {
+      return null;
+    }
     int rootNote = random.nextInt(12);
     var notes = [rootNote];
-    var maxPossibleNotesPlayed = min(1+ numberOfExtraNotes, setOfNotes.length * 3);
+    var maxPossibleNotesPlayed = min(
+      1 + numberOfExtraNotes,
+      setOfNotes.length * 3,
+    );
     while (notes.length < maxPossibleNotesPlayed) {
       var randomNote = setOfNotes[random.nextInt(setOfNotes.length)];
       var randomOctave = random.nextInt(3) * 12;
@@ -113,7 +125,7 @@ class TaskGenerator extends _$TaskGenerator {
       if (!notes.contains(newNote)) notes.add(newNote);
     }
     var noteNames = notesToName(notes);
-    var newTask = Task(notes: notes, solution:noteNames);
+    var newTask = Task(notes: notes, solution: noteNames);
     return newTask;
   }
 

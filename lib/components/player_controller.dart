@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:simple_perfect_pitch_trainer/services/chord_player/chord_player_controller.dart';
-import 'package:simple_perfect_pitch_trainer/services/task/task_generator.dart';
-import 'package:simple_perfect_pitch_trainer/services/ui_state_controller.dart';
 
 class PlayerController extends ConsumerWidget {
   const PlayerController({super.key});
