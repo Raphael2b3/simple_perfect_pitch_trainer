@@ -29,13 +29,12 @@ class ChordPlayerController extends _$ChordPlayerController {
 
   @override
   FutureOr<ChordPlayer> build() async {
-    ref.onDispose(()async {
-      await state.value?.dispose();
-      throw Exception("Thankfully this is being called");
-    });
     var task = await ref.watch(taskGeneratorProvider.future);
     var chordPlayer = await ChordPlayer.create(notesToFilenames(task.notes));
     await resume();
+    ref.onDispose(() async {
+      await chordPlayer.dispose();
+    });
     return chordPlayer;
   }
 
@@ -46,18 +45,19 @@ class ChordPlayerController extends _$ChordPlayerController {
         return "$name$octave.mp3";
       }).toList();
 
-  Future resume() async {
-    for (var player in state.value?.playerList ?? []) {
+  Future<void> resume() async {
+    var chordPlayer = (await ref.read(chordPlayerControllerProvider.future));
+    for (var player in chordPlayer.playerList) {
       await player.resume();
     }
     ref.notifyListeners();
   }
 
-  Future pause() async {
-    for (var player in state.value?.playerList ?? []) {
+  Future<void> pause() async {
+    var chordPlayer = (await ref.read(chordPlayerControllerProvider.future));
+    for (var player in chordPlayer.playerList) {
       await player.pause();
     }
     ref.notifyListeners();
   }
-
 }

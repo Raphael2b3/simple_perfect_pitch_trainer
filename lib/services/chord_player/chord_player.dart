@@ -1,11 +1,10 @@
 import 'package:audioplayers/audioplayers.dart';
 
 class ChordPlayer {
-  List<AudioPlayer> playerList;
 
   ChordPlayer(this.playerList);
 
-  get isPlaying =>
+  bool get isPlaying =>
       playerList.any((player) => player.state == PlayerState.playing);
 
   static Future<ChordPlayer> create(List<String> filenames) async {
@@ -21,9 +20,12 @@ class ChordPlayer {
   }
 
 
+  List<AudioPlayer> playerList;
   Future dispose() async {
+    print("Disposing ChordPlayer");
     for (var player in playerList) {
       await player.dispose();
+      // E: Concurrent modification during iteration: Instance(length:2) of '_GrowableList'.
     }
   }
 }
