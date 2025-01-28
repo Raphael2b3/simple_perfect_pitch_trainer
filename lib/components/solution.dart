@@ -14,7 +14,7 @@ class Solution extends ConsumerWidget {
     var task = ref.watch(taskGeneratorProvider);
     var uiManager = ref.read(uiStateControllerProvider.notifier);
     var revealed = ref.watch(uiStateControllerProvider.select((v)=>v.solutionRevealed));
-    if (task == null) {
+    if (!task.hasValue) {
       return const Center(
         child: CircularProgressIndicator(),
       );
@@ -22,9 +22,9 @@ class Solution extends ConsumerWidget {
     if (revealed) {
       return Expanded(
         child: ListView.builder(
-          itemCount: task.solution.length,
+          itemCount: task.value!.solution.length,
           itemBuilder: (c, i) {
-            var solutionName = task.solution[i];
+            var solutionName = task.value!.solution[i];
             var isPlaying = ref.watch(
               chordPlayerControllerProvider.select((v) {
                 return v.value?.playerList[i].state == PlayerState.playing;

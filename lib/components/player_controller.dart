@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:simple_perfect_pitch_trainer/services/chord_player/chord_player_controller.dart';
+import 'package:simple_perfect_pitch_trainer/services/task/task_generator.dart';
 
 class PlayerController extends ConsumerWidget {
   const PlayerController({super.key});
@@ -17,9 +18,7 @@ class PlayerController extends ConsumerWidget {
         TextButton(
           onPressed:
               () async =>
-                  await ref
-                      .read(chordPlayerControllerProvider.notifier)
-                      .previous(),
+                  await ref.read(taskGeneratorProvider.notifier).getNextTask(),
           child: const Text("Previous"),
         ),
         if (isPlaying)
@@ -44,7 +43,7 @@ class PlayerController extends ConsumerWidget {
           onPressed:
               () async =>
                   await ref
-                      .read(chordPlayerControllerProvider.notifier).forward(),
+                      .read(taskGeneratorProvider.notifier).getNextTask(),
           child: const Text("Next"),
         ),
       ],

@@ -28,10 +28,15 @@ class ChordPlayerController extends _$ChordPlayerController {
   ];
 
   @override
-  FutureOr<ChordPlayer?> build() async {
-    ref.keepAlive();
-    ref.onDispose(() async => await state.value?.dispose());
-    return null;
+  FutureOr<ChordPlayer> build() async {
+    ref.onDispose(()async {
+      await state.value?.dispose();
+      throw Exception("Thankfully this is being called");
+    });
+    var task = await ref.watch(taskGeneratorProvider.future);
+    var chordPlayer = await ChordPlayer.create(notesToFilenames(task.notes));
+    await resume();
+    return chordPlayer;
   }
 
   List<String> notesToFilenames(List<int> notesToPlay) =>
@@ -40,14 +45,6 @@ class ChordPlayerController extends _$ChordPlayerController {
         var octave = ((i / 12).floor() % 3) + 1;
         return "$name$octave.mp3";
       }).toList();
-
-  Future updatePlayers(Task task) async {
-    if (state.value != null) await state.value!.dispose();
-    state = await AsyncValue.guard(
-      () async => await ChordPlayer.create(notesToFilenames(task.notes)),
-    );
-    await resume();
-  }
 
   Future resume() async {
     for (var player in state.value?.playerList ?? []) {
@@ -63,15 +60,4 @@ class ChordPlayerController extends _$ChordPlayerController {
     ref.notifyListeners();
   }
 
-  Future previous() async {
-    var task = ref.read(taskGeneratorProvider.notifier).getPreviousTask();
-    await updatePlayers(task);
-  }
-
-  Future forward() async {
-    var task = ref.read(taskGeneratorProvider.notifier).getNextTask();
-    if (task != null) {
-      await updatePlayers(task);
-    }
-  }
 }

@@ -64,21 +64,17 @@ class TaskGenerator extends _$TaskGenerator {
   get scaleManager => ref.read(scaleManagerProvider.notifier);
 
   @override
-  Task? build() {
-    return getNewTask();
+  Future<Task> build() async {
+    return await getNewTask();
   }
 
   List<int> scaleToIntervalList(List<String> scale) {
     return scale.map((e) => intervalList.indexOf(e)).toList();
   }
 
-  List<int>? getRandomSetOfIntervals() {
-    var configs = ref.watch(scaleManagerProvider);
-    if (!configs.hasValue) {
-      return null;
-    }
-    var actives =
-        configs.value!.values.where((value) => value.isActive).toList();
+  Future<List<int>> getRandomSetOfIntervals() async {
+    var configs = await ref.read(scaleManagerProvider.future);
+    var actives = configs.values.where((value) => value.isActive).toList();
     // get activated scales
     if (actives.isEmpty) {
       return fallbackIntervals;
@@ -87,31 +83,15 @@ class TaskGenerator extends _$TaskGenerator {
     return scaleToIntervalList(actives[i].values);
   }
 
-  Task getPreviousTask() {
-    var pre = taskHistory.getPreviousTask();
-    state = pre;
-    return pre;
-  }
+  void getPreviousTask() =>
+      state = AsyncValue.data(taskHistory.getPreviousTask());
 
-  Task? getNextTask() {
-    var task = taskHistory.getNextTask();
-    if (task == null) {
-      task = getNewTask();
-      if (task == null) {
-        return null;
-      }
-      taskHistory.addTask(task);
-    }
-    state = task;
-    return task;
-  }
+  Future<void> getNextTask() async =>
+      state = AsyncValue.data(taskHistory.getNextTask() ?? await getNewTask());
 
-  Task? getNewTask() {
+  Future<Task> getNewTask() async {
     var numberOfExtraNotes = ref.read(settingsProvider).numberOfExtraNotes;
-    var setOfNotes = getRandomSetOfIntervals();
-    if (setOfNotes == null) {
-      return null;
-    }
+    var setOfNotes = await getRandomSetOfIntervals();
     int rootNote = random.nextInt(12);
     var notes = [rootNote];
     var maxPossibleNotesPlayed = min(
@@ -126,6 +106,7 @@ class TaskGenerator extends _$TaskGenerator {
     }
     var noteNames = notesToName(notes);
     var newTask = Task(notes: notes, solution: noteNames);
+    taskHistory.addTask(newTask);
     return newTask;
   }
 

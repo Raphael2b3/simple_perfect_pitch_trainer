@@ -1,9 +1,4 @@
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_manager.dart';
-import 'package:simple_perfect_pitch_trainer/services/task/task.dart';
-import 'package:simple_perfect_pitch_trainer/services/task/task_generator.dart';
 
 class ChordPlayer {
   List<AudioPlayer> playerList;

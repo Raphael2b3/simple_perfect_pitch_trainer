@@ -6,6 +6,7 @@ import 'package:numberpicker/numberpicker.dart';
 import 'package:simple_perfect_pitch_trainer/scale_picker.dart';
 import 'package:simple_perfect_pitch_trainer/services/chord_player/chord_player_controller.dart';
 import 'package:simple_perfect_pitch_trainer/services/settings.dart';
+import 'package:simple_perfect_pitch_trainer/services/task/task_generator.dart';
 
 class Settings extends ConsumerStatefulWidget {
   const Settings({super.key});
@@ -23,8 +24,7 @@ class _SettingsState extends ConsumerState<Settings> {
     timer?.cancel();
     timer = Timer.periodic(Duration(seconds: skipTimeout), (Timer t) async {
       if (autoNext) {
-        var player = ref.read(chordPlayerControllerProvider.notifier);
-        player.forward();
+        await ref.read(taskGeneratorProvider.notifier).getNextTask(); // TODO Stop the timer when not used
       }
     });
   }
