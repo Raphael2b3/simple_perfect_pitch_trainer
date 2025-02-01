@@ -16,16 +16,28 @@ class Settings extends ConsumerStatefulWidget {
 }
 
 class _SettingsState extends ConsumerState<Settings> {
-  bool autoNext = false;
+  bool _autoNext = false;
+
+  set autoNext(bool value) {
+    if (value) {
+      reInitTimer();
+    } else {
+      timer?.cancel();
+    }
+    setState(() {
+      _autoNext = value;
+    });
+  }
+
+  bool get autoNext => _autoNext;
   int skipTimeout = 15;
   Timer? timer;
 
   void reInitTimer() {
     timer?.cancel();
     timer = Timer.periodic(Duration(seconds: skipTimeout), (Timer t) async {
-      if (autoNext) {
-        await ref.read(taskGeneratorProvider.notifier).getNextTask(); // TODO Stop the timer when not used
-      }
+      await ref.read(taskGeneratorProvider.notifier).getNextTask();
+      await ref.read(chordPlayerControllerProvider.notifier).resume();
     });
   }
 
@@ -33,13 +45,6 @@ class _SettingsState extends ConsumerState<Settings> {
   void dispose() {
     timer?.cancel();
     super.dispose();
-  }
-
-  @override
-  void initState() {
-    // call a function every n seconds:
-    reInitTimer();
-    super.initState();
   }
 
   @override
@@ -72,18 +77,11 @@ class _SettingsState extends ConsumerState<Settings> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Switch(
-                value: autoNext,
-                onChanged: (n) {
-                  setState(() {
-                    autoNext = n;
-                  });
-                },
-              ),
+              Switch(value: autoNext, onChanged: (n) => autoNext = n),
               if (autoNext) ...[
                 NumberPicker(
                   value: skipTimeout,
-                  minValue: 1,
+                  minValue: 3,
                   maxValue: 300,
                   step: 1,
                   haptics: true,

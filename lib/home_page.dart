@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:simple_perfect_pitch_trainer/components/player_controller.dart';
 import 'package:simple_perfect_pitch_trainer/components/settings.dart';
-import 'components/solution.dart';
+import 'package:simple_perfect_pitch_trainer/services/ui_state_controller.dart';
+import 'components/solution/solution.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key, required this.title});
@@ -10,6 +11,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: const Center(

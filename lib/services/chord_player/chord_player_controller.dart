@@ -30,12 +30,38 @@ class ChordPlayerController extends _$ChordPlayerController {
   @override
   FutureOr<ChordPlayer> build() async {
     var task = await ref.watch(taskGeneratorProvider.future);
-    var chordPlayer = await ChordPlayer.create(notesToFilenames(task.notes));
-    await resume();
+    var chordPlayer = await ChordPlayer.create(
+      notesToFilenames(task.notes),
+      [],
+    );
     ref.onDispose(() async {
       await chordPlayer.dispose();
     });
     return chordPlayer;
+  }
+
+  Future<void> activateOneShot(bool oneShot) async {
+    var chordPlayer = (await ref.read(chordPlayerControllerProvider.future));
+    var targetMode = oneShot ? ReleaseMode.stop : ReleaseMode.loop;
+    for (var player in chordPlayer.playerList) {
+      if (targetMode == player.mode) continue;
+      await player.setReleaseMode(
+        targetMode,
+      );
+    }
+    ref.notifyListeners();
+  }
+
+  Future<void> stopSingleNote(int index) async {
+    var chordPlayer = (await ref.read(chordPlayerControllerProvider.future));
+    await chordPlayer.playerList[index].stop();
+    ref.notifyListeners();
+  }
+
+  Future<void> resumeSingleNote(int index) async {
+    var chordPlayer = (await ref.read(chordPlayerControllerProvider.future));
+    await chordPlayer.playerList[index].resume();
+    ref.notifyListeners();
   }
 
   List<String> notesToFilenames(List<int> notesToPlay) =>

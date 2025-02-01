@@ -24,7 +24,7 @@ class ScaleItem extends ConsumerWidget {
         if (config.isCustom) ...[
           IconButton(
             onPressed: () {
-              //TODO
+              //TODO show dialog to edit scale
             },
             icon: Icon(Icons.edit),
           ),
