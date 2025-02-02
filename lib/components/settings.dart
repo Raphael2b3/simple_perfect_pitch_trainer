@@ -24,7 +24,7 @@ class _SettingsState extends ConsumerState<Settings> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Text('Number of Notes Played: ${settings.numberOfExtraNotes + 1}'),
+          Text('Number of notes played: ${(settings.numberOfExtraNotes + 1).toInt()}'),
           Slider(
             value: settings.numberOfExtraNotes,
             max: 11,
@@ -40,7 +40,7 @@ class _SettingsState extends ConsumerState<Settings> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Switch(value: autoNext, onChanged: (n) => ref.read(settingsProvider.notifier).autoNext = n),
-              Text(autoNext ? "AutoSkip after" : "AutoSkip deactivated"),
+              Text(autoNext ? "AutoSkip after" : "AutoSkip: Off"),
               if (autoNext) ...[
                 NumberPicker(
                   value: settings.skipTimeOut,
@@ -69,8 +69,8 @@ class _SettingsState extends ConsumerState<Settings> {
                 ),
                 Text(
                   settings.oneShot
-                      ? "Play Chord Once (One Shot)"
-                      : "Repeat Chords",
+                      ? "Loop mode: Off "
+                      : "Loop mode: On",
                 ),
               ],
             ),
@@ -86,8 +86,8 @@ class _SettingsState extends ConsumerState<Settings> {
                 ),
                 Text(
                   settings.callSolution
-                      ? "Call solution after timeout"
-                      : "Don't call solution",
+                      ? "Solution Call: Active"
+                      : "Solution Call: Inactive",
                 ),
               ],
             ),
