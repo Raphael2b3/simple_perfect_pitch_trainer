@@ -29,14 +29,15 @@ class UiStateController extends _$UiStateController {
       state.scaleEditorActivated = false;
       state.solutionExpanded = false;
     }
+    else{
+      state.solutionExpanded = true;
+    }
     ref.notifyListeners();
   }
 
   set scaleEditorActivated(bool value) {
     state.scaleEditorActivated = value;
     if (value) {
-      state.solutionRevealed = false;
-      state.scaleListRevealed = false;
       state.solutionExpanded = false;
     }
     ref.notifyListeners();

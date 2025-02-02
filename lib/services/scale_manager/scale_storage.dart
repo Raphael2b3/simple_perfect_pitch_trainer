@@ -20,26 +20,26 @@ class ScaleStorage {
       "j7",
     ],
     'Ionian': ["1", "2", "3", "4", "5", "6", "j7"],
-    'Dorian': ["1", "2", "b3", "4", "5", "6", "b7"],
-    'Phrygian': ["1", "b2", "b3", "4", "5", "b6", "b7"],
+    'Dorian': ["1", "2", "b3", "4", "5", "6", "7"],
+    'Phrygian': ["1", "b2", "b3", "4", "5", "b6", "7"],
     'Lydian': ["1", "2", "3", "b5", "5", "6", "j7"],
-    'Mixolydian': ["1", "2", "3", "4", "5", "6", "b7"],
-    'Aeolian': ["1", "2", "b3", "4", "5", "b6", "b7"],
-    'Locrian': ["1", "b2", "b3", "4", "b5", "b6", "b7"],
+    'Mixolydian': ["1", "2", "3", "4", "5", "6", "7"],
+    'Aeolian': ["1", "2", "b3", "4", "5", "b6", "7"],
+    'Locrian': ["1", "b2", "b3", "4", "b5", "b6", "7"],
     "Major Pentatonic": ["1", "2", "3", "5", "6"],
-    "Minor Pentatonic": ["1", "b3", "4", "5", "b7"],
-    "Blues": ["1", "b3", "4", "b5", "5", "b7"],
-    "Whole Tone": ["1", "2", "3", "b5", "b6", "b7"],
-    "Augmented": ["1", "b3", "3", "5", "b6", "b7"],
-    "Diminished": ["1", "b2", "b3", "3", "b5", "5", "b6", "6", "b7", "7"],
+    "Minor Pentatonic": ["1", "b3", "4", "5", "7"],
+    "Blues": ["1", "b3", "4", "b5", "5", "7"],
+    "Whole Tone": ["1", "2", "3", "b5", "b6", "7"],
     "Melodic Minor": ["1", "2", "b3", "4", "5", "6", "j7"],
     "Harmonic Minor": ["1", "2", "b3", "4", "5", "b6", "j7"],
+    "Diminished": ["1", "b2", "b3", "3", "b5", "5", "6", "j7"],
+    "Augmented": ["1", "b3", "3", "5", "j7"],
   };
 
   Map<String, ScaleConfig>? scaleConfigs;
 
   Future init() async {
-    print("stopp");
+    print("stop");
     var (customConfigs, activeConfigs) = await _loadConfigs();
     var newScaleConfigs = Map.fromEntries(
       customConfigs.keys
@@ -104,7 +104,8 @@ class ScaleStorage {
   }
 
   /// Deletes a specific key from the customConfigs and updates local storage, unless it is undeletable.
-  Future<void> deleteConfig(String key) async {
+  Future<void> deleteConfig(String? key) async {
+    if (key == null) return;
     var old = scaleConfigs![key];
     if (old != null && !old.isCustom) return;
     scaleConfigs!.remove(key);

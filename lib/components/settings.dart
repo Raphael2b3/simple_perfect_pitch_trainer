@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:numberpicker/numberpicker.dart';
-import 'package:simple_perfect_pitch_trainer/scale_picker.dart';
+import 'package:simple_perfect_pitch_trainer/components/scale_picker/scale_picker.dart';
 import 'package:simple_perfect_pitch_trainer/services/chord_player/chord_player_controller.dart';
 import 'package:simple_perfect_pitch_trainer/services/settings.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task_generator.dart';
@@ -49,35 +49,36 @@ class _SettingsState extends ConsumerState<Settings> {
 
   @override
   Widget build(BuildContext context) {
-    var numberOfExtraNotes = ref.watch(
-      settingsProvider.select((v) => v.numberOfExtraNotes),
-    );
+    var settings = ref.watch(settingsProvider);
+
+
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Text('Number of Notes Played: ${numberOfExtraNotes + 1}'),
+          Text('Number of Notes Played: ${settings.numberOfExtraNotes + 1}'),
           Slider(
-            value: numberOfExtraNotes,
+            value: settings.numberOfExtraNotes,
             max: 11,
             divisions: 11,
             min: 0,
-            label: (numberOfExtraNotes + 1).round().toString(),
+            label: (settings.numberOfExtraNotes + 1).round().toString(),
             onChanged: (v) {
               ref.read(settingsProvider.notifier).numberOfExtraNotes = v;
               v;
             },
           ),
           ScalePicker(),
-          Text(
-            autoNext
-                ? "Automaticly skip after $skipTimeout seconds"
-                : "Automaticly skip deactivated",
-          ),
+
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Switch(value: autoNext, onChanged: (n) => autoNext = n),
+              Text(
+                autoNext
+                    ? "AutoSkip after"
+                    : "AutoSkip deactivated",
+              ),
               if (autoNext) ...[
                 NumberPicker(
                   value: skipTimeout,
@@ -95,6 +96,14 @@ class _SettingsState extends ConsumerState<Settings> {
               ],
             ],
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Switch(value: !settings.oneShot,
+                  onChanged: (n) => ref.read(settingsProvider.notifier).oneShot = !n),
+              Text(settings.oneShot?"Play Chord Once (One Shot)":"Repeat Chords"),
+
+          ],)
         ],
       ),
     );

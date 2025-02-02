@@ -18,11 +18,11 @@ class PlayerController extends ConsumerWidget {
       children: [
         TextButton(
           onPressed:
-              () {
+              () async{
                 ref.read(uiStateControllerProvider.notifier).solutionRevealed =
                 false;
                 ref.read(taskGeneratorProvider.notifier).getPreviousTask();
-                ref.read(chordPlayerControllerProvider.notifier).resume();
+                await ref.read(chordPlayerControllerProvider.notifier).resume();
               },
           child: const Text("Previous"),
         ),

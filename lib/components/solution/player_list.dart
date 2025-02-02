@@ -14,9 +14,9 @@ class PlayerList extends ConsumerWidget {
       return const Center(child: CircularProgressIndicator());
     }
     return ListView.builder(
-      itemCount: task.value!.solution.length,
+      itemCount: task.value!.solution.noteNames.length,
       itemBuilder: (c, i) {
-        var solutionName = task.value!.solution[i];
+        var solutionName = task.value!.solution.noteNames[i];
         var isPlaying = ref.watch(
           chordPlayerControllerProvider.select((v) {
             return v.value?.playerList[i].state == PlayerState.playing;

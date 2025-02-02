@@ -19,9 +19,17 @@ class Solution extends ConsumerWidget {
     var expanded = ref.watch(
       uiStateControllerProvider.select((v) => v.solutionExpanded),
     );
+
+    var task = ref.watch(taskGeneratorProvider);
+
     var child =
         revealed
-            ? const PlayerList()
+            ? Column(
+              children: [
+                Text("Solution", style: TextStyle(fontSize: 20)),
+                Expanded(child: PlayerList()),
+              ],
+            )
             : Center(
               child: FilledButton(
                 onPressed: () {
@@ -30,10 +38,7 @@ class Solution extends ConsumerWidget {
                 child: const Text("Reveal Solution"),
               ),
             );
-    if (expanded) {
-      return Expanded(child: child);
-    } else {
-      return child;
-    }
+    if (expanded || revealed) return Expanded(child: child);
+    return child;
   }
 }

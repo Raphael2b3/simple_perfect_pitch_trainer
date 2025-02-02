@@ -9,7 +9,7 @@ part 'settings.g.dart';
 
 class SettingsData{
   double numberOfExtraNotes = 1;
-
+  bool oneShot = false;
 }
 // A shared state that can be accessed by multiple widgets at the same time.
 @riverpod
@@ -18,7 +18,10 @@ class Settings extends _$Settings {
     state.numberOfExtraNotes = numberOfExtraNotes;
     ref.notifyListeners();
   }
-
+  set oneShot(bool v) {
+    state.oneShot = v;
+    ref.notifyListeners();
+  }
 
   @override
   SettingsData build() {

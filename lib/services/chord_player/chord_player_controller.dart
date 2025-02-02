@@ -2,6 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_manager.dart';
+import 'package:simple_perfect_pitch_trainer/services/settings.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task_generator.dart';
 
@@ -30,9 +31,16 @@ class ChordPlayerController extends _$ChordPlayerController {
   @override
   FutureOr<ChordPlayer> build() async {
     var task = await ref.watch(taskGeneratorProvider.future);
+    ref.listen(settingsProvider.select((s) => s.oneShot), (old, news) async {
+      if (old != news) {
+        await activateOneShot(news);
+      }
+    });
     var chordPlayer = await ChordPlayer.create(
       notesToFilenames(task.notes),
       [],
+      () =>ref.notifyListeners(),
+      ref.read(settingsProvider).oneShot,
     );
     ref.onDispose(() async {
       await chordPlayer.dispose();
@@ -42,14 +50,7 @@ class ChordPlayerController extends _$ChordPlayerController {
 
   Future<void> activateOneShot(bool oneShot) async {
     var chordPlayer = (await ref.read(chordPlayerControllerProvider.future));
-    var targetMode = oneShot ? ReleaseMode.stop : ReleaseMode.loop;
-    for (var player in chordPlayer.playerList) {
-      if (targetMode == player.mode) continue;
-      await player.setReleaseMode(
-        targetMode,
-      );
-    }
-    ref.notifyListeners();
+    chordPlayer.oneShot = oneShot;
   }
 
   Future<void> stopSingleNote(int index) async {

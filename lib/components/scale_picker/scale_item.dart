@@ -10,14 +10,14 @@ class ScaleItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var manager = ref.read(scaleManagerProvider.notifier);
+
     return Row(
       children: [
         Checkbox(
           value: config.isActive,
           onChanged: (v) {
-            config.isActive = true;
-            manager.updateScale(config);
+            config.isActive = v ?? false;
+            ref.read(scaleManagerProvider.notifier).updateScale(config);
           },
         ),
         Expanded(child: Text(config.name)),
@@ -30,7 +30,7 @@ class ScaleItem extends ConsumerWidget {
           ),
           IconButton(
             onPressed: () {
-              manager.deleteScale(config.name);
+              ref.read(scaleManagerProvider.notifier).deleteScale(config.name);
             },
             icon: Icon(Icons.delete),
           ),

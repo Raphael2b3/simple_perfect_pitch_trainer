@@ -1,13 +1,12 @@
-import 'dart:convert';
 import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_config.dart';
 import 'package:simple_perfect_pitch_trainer/services/settings.dart';
+import 'package:simple_perfect_pitch_trainer/services/task/solution.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task_history.dart';
 import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_manager.dart';
-import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_storage.dart';
 
 part "task_generator.g.dart";
 
@@ -31,20 +30,20 @@ class TaskGenerator extends _$TaskGenerator {
 
   TaskHistory taskHistory = TaskHistory();
 
-  static const List<int> fallbackIntervals = [
-    0,
-    1,
-    2,
-    3,
-    4,
-    5,
-    6,
-    7,
-    8,
-    9,
-    10,
-    11,
-  ];
+  static ScaleConfig fallbackConfig = ScaleConfig(
+    name: "Fallback",
+    values: [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "j7",
+    ],
+    isActive: true,
+    isCustom: false,
+  );
 
   static const List<String> notes = [
     'C',
@@ -72,15 +71,15 @@ class TaskGenerator extends _$TaskGenerator {
     return scale.map((e) => intervalList.indexOf(e)).toList();
   }
 
-  Future<List<int>> getRandomSetOfIntervals() async {
+  Future<ScaleConfig> getRandomScale() async {
     var configs = await ref.read(scaleManagerProvider.future);
-    var actives = configs.values.where((value) => value.isActive).toList();
+    List<ScaleConfig> actives = configs.values.where((value) => value.isActive).toList();
     // get activated scales
     if (actives.isEmpty) {
-      return fallbackIntervals;
+      return fallbackConfig;
     }
     var i = random.nextInt(actives.length);
-    return scaleToIntervalList(actives[i].values);
+    return actives[i];
   }
 
   void getPreviousTask() =>
@@ -91,21 +90,25 @@ class TaskGenerator extends _$TaskGenerator {
 
   Future<Task> getNewTask() async {
     var numberOfExtraNotes = ref.read(settingsProvider).numberOfExtraNotes;
-    var setOfNotes = await getRandomSetOfIntervals();
+    var scale = await getRandomScale();
+    var setOfNotes = scaleToIntervalList(scale.values);
     int rootNote = random.nextInt(12);
     var notes = [rootNote];
     var maxPossibleNotesPlayed = min(
       1 + numberOfExtraNotes,
       setOfNotes.length * 3,
     );
+    List<String> usedIntervals = [];
     while (notes.length < maxPossibleNotesPlayed) {
-      var randomNote = setOfNotes[random.nextInt(setOfNotes.length)];
-      var randomOctave = random.nextInt(3) * 12;
-      var newNote = rootNote + randomOctave + randomNote;
+      int randomNote = setOfNotes[random.nextInt(setOfNotes.length)];
+      int randomOctave = random.nextInt(3) * 12;
+      int newNote = rootNote + randomOctave + randomNote;
+      usedIntervals.add(intervalList[randomNote]);
       if (!notes.contains(newNote)) notes.add(newNote);
     }
     var noteNames = notesToName(notes);
-    var newTask = Task(notes: notes, solution: noteNames);
+    var solution = Solution(noteNames:noteNames, intervals: usedIntervals, scaleName: scale.name);
+    var newTask = Task(notes: notes, solution: solution);
     taskHistory.addTask(newTask);
     return newTask;
   }

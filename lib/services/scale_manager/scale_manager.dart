@@ -1,10 +1,7 @@
-import 'dart:convert';
 import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_config.dart';
-import 'package:simple_perfect_pitch_trainer/services/task/task_history.dart';
 import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_storage.dart';
 
 part "scale_manager.g.dart";
@@ -23,18 +20,18 @@ class ScaleManager extends _$ScaleManager {
   /// Checks if a name is already used in any config.
   bool isNameTaken(String name) => state.value?.keys.contains(name) ?? false;
 
-  Future updateScale(ScaleConfig newConfig, {String? oldName}) async {
+  Future<void> updateScale(ScaleConfig newConfig, {String? oldName}) async {
     if (oldName == newConfig.name) oldName = null;
 
     var overriddenConfig = state.value![newConfig.name]!;
-
-    if (!overriddenConfig.isCustom) return;
+    // active state should not be changed if the config is not custom
+    if (overriddenConfig.values != newConfig.values && !overriddenConfig.isCustom) return;
     if (oldName != null && isNameTaken(newConfig.name)) return;
 
     await scaleStorage.updateScaleConfig(newConfig);
 
-    await scaleStorage.deleteConfig(oldName!);
-
+    await scaleStorage.deleteConfig(oldName);
+    print("updated scale");
     ref.notifyListeners();
   }
 

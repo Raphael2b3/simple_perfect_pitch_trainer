@@ -4,14 +4,20 @@ class ChordPlayer {
   List<AudioPlayer> playerList;
   List<AudioPlayer> solutionList;
   bool oneShot = false;
+  void Function()? onPlayerComplete;
+  ChordPlayer(this.playerList, this.solutionList,this.onPlayerComplete,this.oneShot) {
 
-  ChordPlayer(this.playerList, this.solutionList) {
     for (var player in playerList) {
       player.onPlayerComplete.listen((event)async {
+        print("Player Mode ${oneShot? "OneShot": "Loop"}");
         if (!oneShot) {
           await player.seek(Duration.zero);
           print("Seeking to zero");
           await player.resume();
+        }
+        else{
+          print("OneShot Pausing");
+          onPlayerComplete?.call();
         }
       });
       player.onPlayerStateChanged.listen((PlayerState event) {
@@ -26,6 +32,8 @@ class ChordPlayer {
   static Future<ChordPlayer> create(
     List<String> notesFilenames,
     List<String> solutionFilenames,
+      void Function()? onPlayerComplete,
+      bool onShot,
   ) async {
     List<AudioPlayer> newPlayers = [];
 
@@ -45,7 +53,7 @@ class ChordPlayer {
       await newPlayer.setReleaseMode(ReleaseMode.loop);
       solutionPlayers.add(newPlayer);
     }
-    var player = ChordPlayer(newPlayers, solutionPlayers);
+    var player = ChordPlayer(newPlayers, solutionPlayers,onPlayerComplete,onShot);
     return player;
   }
 
