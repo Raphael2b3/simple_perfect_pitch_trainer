@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_perfect_pitch_trainer/components/player_controller.dart';
+import 'package:simple_perfect_pitch_trainer/components/reference_note.dart';
 import 'package:simple_perfect_pitch_trainer/components/settings.dart';
 import 'package:simple_perfect_pitch_trainer/services/ui_state_controller.dart';
 import 'solution/solution.dart';
@@ -15,7 +16,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(title: Text(title)),
-      body: const Center(
+      body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[

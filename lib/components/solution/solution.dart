@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:simple_perfect_pitch_trainer/components/reference_note.dart';
 import 'package:simple_perfect_pitch_trainer/components/solution/player_list.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task_generator.dart';
 import 'package:simple_perfect_pitch_trainer/services/ui_state_controller.dart';
@@ -21,24 +22,32 @@ class Solution extends ConsumerWidget {
     );
 
     var task = ref.watch(taskGeneratorProvider);
-
-    var child =
+    var rootNote = task.value?.solution.rootNote;
+    var scaleName = task.value?.solution.scaleName;
+    Widget child =
         revealed
             ? Column(
+          mainAxisSize: MainAxisSize.min,
               children: [
-                Text("Solution", style: TextStyle(fontSize: 20)),
+                const ReferenceNote(),
+                Text( "$rootNote $scaleName", style: TextStyle(fontSize: 20)),
                 Expanded(child: PlayerList()),
               ],
             )
-            : Center(
-              child: FilledButton(
-                onPressed: () {
-                  uiManager.solutionRevealed = true;
-                },
-                child: const Text("Reveal Solution"),
-              ),
+            : Column(
+              children: [
+                const ReferenceNote(),
+                FilledButton(
+                  onPressed: () {
+                    uiManager.solutionRevealed = true;
+                  },
+                  child: const Text("Reveal Solution"),
+                ),
+              ],
             );
-    if (expanded || revealed) return Expanded(child: child);
+
+    if (expanded || revealed) child = Expanded(child: child);
+
     return child;
   }
 }

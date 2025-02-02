@@ -2,6 +2,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:simple_perfect_pitch_trainer/services/chord_player/chord_player_controller.dart';
+import 'package:simple_perfect_pitch_trainer/services/settings.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task_generator.dart';
 
 class PlayerList extends ConsumerWidget {
@@ -37,6 +38,7 @@ class PlayerList extends ConsumerWidget {
               await ref
                   .read(chordPlayerControllerProvider.notifier)
                   .resumeSingleNote(i);
+              ref.read(settingsProvider.notifier).autoNext = false;
             },
             child: Text("$solutionName Paused"),
           );

@@ -16,42 +16,10 @@ class Settings extends ConsumerStatefulWidget {
 }
 
 class _SettingsState extends ConsumerState<Settings> {
-  bool _autoNext = false;
-
-  set autoNext(bool value) {
-    if (value) {
-      reInitTimer();
-    } else {
-      timer?.cancel();
-    }
-    setState(() {
-      _autoNext = value;
-    });
-  }
-
-  bool get autoNext => _autoNext;
-  int skipTimeout = 15;
-  Timer? timer;
-
-  void reInitTimer() {
-    timer?.cancel();
-    timer = Timer.periodic(Duration(seconds: skipTimeout), (Timer t) async {
-      await ref.read(taskGeneratorProvider.notifier).getNextTask();
-      await ref.read(chordPlayerControllerProvider.notifier).resume();
-    });
-  }
-
-  @override
-  void dispose() {
-    timer?.cancel();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     var settings = ref.watch(settingsProvider);
-
-
+    var autoNext = settings.autoNext;
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -65,45 +33,64 @@ class _SettingsState extends ConsumerState<Settings> {
             label: (settings.numberOfExtraNotes + 1).round().toString(),
             onChanged: (v) {
               ref.read(settingsProvider.notifier).numberOfExtraNotes = v;
-              v;
             },
           ),
           ScalePicker(),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Switch(value: autoNext, onChanged: (n) => autoNext = n),
-              Text(
-                autoNext
-                    ? "AutoSkip after"
-                    : "AutoSkip deactivated",
-              ),
+              Switch(value: autoNext, onChanged: (n) => ref.read(settingsProvider.notifier).autoNext = n),
+              Text(autoNext ? "AutoSkip after" : "AutoSkip deactivated"),
               if (autoNext) ...[
                 NumberPicker(
-                  value: skipTimeout,
+                  value: settings.skipTimeOut,
                   minValue: 3,
                   maxValue: 300,
                   step: 1,
+                  itemHeight: 30,
                   haptics: true,
-                  onChanged:
-                      (value) => setState(() {
-                        skipTimeout = value;
-                        reInitTimer();
-                      }),
+                  onChanged: (value) {
+                    var settingsManager = ref.read(settingsProvider.notifier);
+                    settingsManager.skipTimeOut = value;
+                  },
                 ),
                 const Text("seconds"),
               ],
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Switch(value: !settings.oneShot,
-                  onChanged: (n) => ref.read(settingsProvider.notifier).oneShot = !n),
-              Text(settings.oneShot?"Play Chord Once (One Shot)":"Repeat Chords"),
-
-          ],)
+          if (!autoNext)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Switch(
+                  value: !settings.oneShot,
+                  onChanged:
+                      (n) => ref.read(settingsProvider.notifier).oneShot = !n,
+                ),
+                Text(
+                  settings.oneShot
+                      ? "Play Chord Once (One Shot)"
+                      : "Repeat Chords",
+                ),
+              ],
+            ),
+          if (autoNext)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Switch(
+                  value: settings.callSolution,
+                  onChanged:
+                      (n) =>
+                          ref.read(settingsProvider.notifier).callSolution = n,
+                ),
+                Text(
+                  settings.callSolution
+                      ? "Call solution after timeout"
+                      : "Don't call solution",
+                ),
+              ],
+            ),
         ],
       ),
     );

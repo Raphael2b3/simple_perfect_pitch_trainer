@@ -107,7 +107,7 @@ class TaskGenerator extends _$TaskGenerator {
       if (!notes.contains(newNote)) notes.add(newNote);
     }
     var noteNames = notesToName(notes);
-    var solution = Solution(noteNames:noteNames, intervals: usedIntervals, scaleName: scale.name);
+    var solution = Solution(noteNames:noteNames, intervals: usedIntervals, scaleName: scale.name, rootNote:noteNames[0]);
     var newTask = Task(notes: notes, solution: solution);
     taskHistory.addTask(newTask);
     return newTask;

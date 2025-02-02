@@ -98,7 +98,7 @@ class ScaleStorage {
   /// Updates a specific key with new values and stores the updated customConfigs in local storage.
   Future<void> updateScaleConfig(ScaleConfig newConfig) async {
     var old = scaleConfigs![newConfig.name];
-    if (old != null && !old.isCustom) return;
+    if (old != null && old.values != newConfig.values && !old.isCustom) return;
     scaleConfigs![newConfig.name] = newConfig;
     await _saveConfigs();
   }
@@ -129,5 +129,6 @@ class ScaleStorage {
       'activeConfigs': activeConfigs,
     });
     await prefs.setString(_storageKey, jsonString);
+    print("saved $jsonString");
   }
 }

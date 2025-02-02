@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:simple_perfect_pitch_trainer/services/chord_player/chord_player_controller.dart';
+import 'package:simple_perfect_pitch_trainer/services/settings.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task_generator.dart';
 import 'package:simple_perfect_pitch_trainer/services/ui_state_controller.dart';
 
@@ -17,22 +18,20 @@ class PlayerController extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         TextButton(
-          onPressed:
-              () async{
-                ref.read(uiStateControllerProvider.notifier).solutionRevealed =
+          onPressed: () async {
+            ref.read(uiStateControllerProvider.notifier).solutionRevealed =
                 false;
-                ref.read(taskGeneratorProvider.notifier).getPreviousTask();
-                await ref.read(chordPlayerControllerProvider.notifier).resume();
-              },
+            ref.read(taskGeneratorProvider.notifier).getPreviousTask();
+            await ref.read(chordPlayerControllerProvider.notifier).resume();
+          },
           child: const Text("Previous"),
         ),
         if (isPlaying)
           OutlinedButton(
-            onPressed:
-                () async =>
-                    await ref
-                        .read(chordPlayerControllerProvider.notifier)
-                        .pause(),
+            onPressed: () async {
+              await ref.read(chordPlayerControllerProvider.notifier).pause();
+              ref.read(settingsProvider.notifier).autoNext = false;
+            },
             child: const Text("Pause"),
           )
         else
@@ -47,7 +46,7 @@ class PlayerController extends ConsumerWidget {
         TextButton(
           onPressed: () async {
             ref.read(uiStateControllerProvider.notifier).solutionRevealed =
-            false;
+                false;
             await ref.read(taskGeneratorProvider.notifier).getNextTask();
             await ref.read(chordPlayerControllerProvider.notifier).resume();
           },

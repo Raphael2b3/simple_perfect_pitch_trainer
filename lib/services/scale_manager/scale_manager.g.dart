@@ -6,7 +6,7 @@ part of 'scale_manager.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$scaleManagerHash() => r'a9360bab0da8db40f7d9d518259edbf727b21cc9';
+String _$scaleManagerHash() => r'459300cef1a1276941263d44a228168b8e2a774d';
 
 /// See also [ScaleManager].
 @ProviderFor(ScaleManager)

@@ -29,9 +29,7 @@ class ScaleManager extends _$ScaleManager {
     if (oldName != null && isNameTaken(newConfig.name)) return;
 
     await scaleStorage.updateScaleConfig(newConfig);
-
     await scaleStorage.deleteConfig(oldName);
-    print("updated scale");
     ref.notifyListeners();
   }
 

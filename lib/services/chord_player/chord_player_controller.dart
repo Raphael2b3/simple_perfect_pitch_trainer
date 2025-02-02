@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -15,37 +17,52 @@ part 'chord_player_controller.g.dart';
 class ChordPlayerController extends _$ChordPlayerController {
   static const List<String> notes = [
     'C',
-    'C#',
+    'Db',
     'D',
-    'D#',
+    'Eb',
     'E',
     'F',
-    'F#',
+    'Gb',
     'G',
-    'G#',
+    'Ab',
     'A',
-    'A#',
+    'Bb',
     'B',
   ];
 
   @override
   FutureOr<ChordPlayer> build() async {
     var task = await ref.watch(taskGeneratorProvider.future);
-    ref.listen(settingsProvider.select((s) => s.oneShot), (old, news) async {
-      if (old != news) {
-        await activateOneShot(news);
-      }
-    });
+    ref.listen(
+      settingsProvider.select((s) => (s.oneShot, s.autoNext)),
+      loopingGate,
+    );
+    var settings = ref.read(settingsProvider);
     var chordPlayer = await ChordPlayer.create(
       notesToFilenames(task.notes),
       [],
-      () =>ref.notifyListeners(),
-      ref.read(settingsProvider).oneShot,
+      () => ref.notifyListeners(),
+      settings.oneShot && !settings.autoNext,
     );
     ref.onDispose(() async {
       await chordPlayer.dispose();
     });
     return chordPlayer;
+  }
+
+  Future<void> loopingGate((bool, bool)? old, (bool, bool) news) async {
+    var ((oneShot, autoNext), (oldOneShot, oldAutoNext)) = (
+      news,
+      old ?? (false, false),
+    );
+
+    if ((!autoNext && oneShot) && (!oldOneShot || oneShot && oldAutoNext)) {
+      await activateOneShot(true);
+    }
+
+    if ((oldOneShot && autoNext) || (!autoNext && oldOneShot && !oneShot)) {
+      await activateOneShot(false);
+    }
   }
 
   Future<void> activateOneShot(bool oneShot) async {
@@ -69,7 +86,7 @@ class ChordPlayerController extends _$ChordPlayerController {
       notesToPlay.map((i) {
         var name = notes[i % 12];
         var octave = ((i / 12).floor() % 3) + 1;
-        return "$name$octave.mp3";
+        return "notes/$name$octave.mp3";
       }).toList();
 
   Future<void> resume() async {
