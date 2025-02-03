@@ -2,10 +2,9 @@ import 'package:audioplayers/audioplayers.dart';
 
 class ChordPlayer {
   List<AudioPlayer> playerList;
-  List<AudioPlayer> solutionList;
   bool oneShot = false;
   void Function()? onPlayerComplete;
-  ChordPlayer(this.playerList, this.solutionList,this.onPlayerComplete,this.oneShot) {
+  ChordPlayer(this.playerList, this.onPlayerComplete,this.oneShot) {
 
     for (var player in playerList) {
       player.onPlayerComplete.listen((event)async {
@@ -45,15 +44,8 @@ class ChordPlayer {
       newPlayers.add(newPlayer);
     }
 
-    List<AudioPlayer> solutionPlayers = [];
-    for (var filename in solutionFilenames) {
-      var newPlayer = AudioPlayer();
-      await newPlayer.setPlayerMode(PlayerMode.lowLatency);
-      await newPlayer.setSourceAsset(filename);
-      await newPlayer.setReleaseMode(ReleaseMode.loop);
-      solutionPlayers.add(newPlayer);
-    }
-    var player = ChordPlayer(newPlayers, solutionPlayers,onPlayerComplete,onShot);
+    var player = ChordPlayer(newPlayers, onPlayerComplete,onShot);
+    await player.play();
     return player;
   }
 

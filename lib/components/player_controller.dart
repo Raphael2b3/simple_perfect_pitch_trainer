@@ -50,7 +50,7 @@ class PlayerController extends ConsumerWidget {
             await ref.read(taskGeneratorProvider.notifier).getNextTask();
             await ref.read(chordPlayerControllerProvider.notifier).resume();
           },
-          child: const Text("Next"),
+          child: const Text("Next Task"),
         ),
       ],
     );

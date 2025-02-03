@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:simple_perfect_pitch_trainer/components/reference_note.dart';
 import 'package:simple_perfect_pitch_trainer/components/solution/player_list.dart';
+import 'package:simple_perfect_pitch_trainer/services/solution_player/solution_player.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task_generator.dart';
 import 'package:simple_perfect_pitch_trainer/services/ui_state_controller.dart';
 
@@ -24,13 +25,17 @@ class Solution extends ConsumerWidget {
     var task = ref.watch(taskGeneratorProvider);
     var rootNote = task.value?.solution.rootNote;
     var scaleName = task.value?.solution.scaleName;
+
     Widget child =
         revealed
             ? Column(
-          mainAxisSize: MainAxisSize.min,
+              //mainAxisSize: MainAxisSize.min,
               children: [
                 const ReferenceNote(),
-                Text( "$rootNote $scaleName", style: TextStyle(fontSize: 20)),
+                Text(
+                  "Notes From Scale: $scaleName",
+                  style: TextStyle(fontSize: 20),
+                ),
                 Expanded(child: PlayerList()),
               ],
             )
@@ -38,11 +43,31 @@ class Solution extends ConsumerWidget {
               children: [
                 const ReferenceNote(),
                 FilledButton(
+                  onPressed: () async {
+                    await ref
+                        .read(chordPlayerControllerProvider.notifier)
+                        .pause();
+                    var task = await ref.read(taskGeneratorProvider.future);
+                    await playSolution(task.solution, true, true);
+                  },
+                  child: Text("Play Solution"),
+                ),
+                FilledButton(
                   onPressed: () {
                     uiManager.solutionRevealed = true;
                   },
                   child: const Text("Reveal Solution"),
                 ),
+                if (expanded)
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        "Press Play.\nWhat Notes Do You Hear?\nWhat Intervals Do You Hear?",
+                        style: TextStyle(fontSize: 20),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
               ],
             );
 

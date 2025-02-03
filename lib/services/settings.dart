@@ -9,8 +9,8 @@ import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_manage
 part 'settings.g.dart';
 
 class SettingsData{
-  double numberOfExtraNotes = 1;
-  bool oneShot = false;
+  double numberOfExtraNotes = 0;
+  bool oneShot = true;
   bool callSolution = false;
   bool autoNext = false;
   int skipTimeOut = 6;

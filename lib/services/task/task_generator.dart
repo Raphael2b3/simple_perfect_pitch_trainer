@@ -32,15 +32,7 @@ class TaskGenerator extends _$TaskGenerator {
 
   static ScaleConfig fallbackConfig = ScaleConfig(
     name: "Fallback",
-    values: [
-      "1",
-      "2",
-      "3",
-      "4",
-      "5",
-      "6",
-      "j7",
-    ],
+    values: ["1", "2", "3", "4", "5", "6", "j7"],
     isActive: true,
     isCustom: false,
   );
@@ -73,7 +65,8 @@ class TaskGenerator extends _$TaskGenerator {
 
   Future<ScaleConfig> getRandomScale() async {
     var configs = await ref.read(scaleManagerProvider.future);
-    List<ScaleConfig> actives = configs.values.where((value) => value.isActive).toList();
+    List<ScaleConfig> actives =
+        configs.values.where((value) => value.isActive).toList();
     // get activated scales
     if (actives.isEmpty) {
       return fallbackConfig;
@@ -96,18 +89,25 @@ class TaskGenerator extends _$TaskGenerator {
     var notes = [rootNote];
     var maxPossibleNotesPlayed = min(
       1 + numberOfExtraNotes,
-      setOfNotes.length * 3,
+      setOfNotes.length * 2 + 1,
     );
     List<String> usedIntervals = [];
+
     while (notes.length < maxPossibleNotesPlayed) {
       int randomNote = setOfNotes[random.nextInt(setOfNotes.length)];
-      int randomOctave = random.nextInt(3) * 12;
+      int randomOctave = 12 + random.nextInt(2) * 12;
       int newNote = rootNote + randomOctave + randomNote;
       usedIntervals.add(intervalList[randomNote]);
       if (!notes.contains(newNote)) notes.add(newNote);
     }
     var noteNames = notesToName(notes);
-    var solution = Solution(noteNames:noteNames, intervals: usedIntervals, scaleName: scale.name, rootNote:noteNames[0]);
+    var solution = Solution(
+      noteNames: noteNames,
+      intervals: usedIntervals,
+      scaleName: scale.name,
+      rootNote: noteNames[0],
+      noteIds: notes,
+    );
     var newTask = Task(notes: notes, solution: solution);
     taskHistory.addTask(newTask);
     return newTask;

@@ -20,6 +20,7 @@ class ScalePicker extends ConsumerWidget {
       var scales = ref.watch(scaleManagerProvider);
       return Expanded(
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,

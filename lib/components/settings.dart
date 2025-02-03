@@ -23,8 +23,10 @@ class _SettingsState extends ConsumerState<Settings> {
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text('Number of notes played: ${(settings.numberOfExtraNotes + 1).toInt()}'),
+          Text('Difficulty: ${(settings.numberOfExtraNotes + 1).toInt()}'),
+          Text('(To Apply Changes, Press "Next Task")',style: TextStyle(fontStyle: FontStyle.italic),),
           Slider(
             value: settings.numberOfExtraNotes,
             max: 11,
@@ -36,61 +38,78 @@ class _SettingsState extends ConsumerState<Settings> {
             },
           ),
           ScalePicker(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Switch(value: autoNext, onChanged: (n) => ref.read(settingsProvider.notifier).autoNext = n),
-              Text(autoNext ? "AutoSkip after" : "AutoSkip: Off"),
-              if (autoNext) ...[
-                NumberPicker(
-                  value: settings.skipTimeOut,
-                  minValue: 3,
-                  maxValue: 300,
-                  step: 1,
-                  itemHeight: 30,
-                  haptics: true,
-                  onChanged: (value) {
-                    var settingsManager = ref.read(settingsProvider.notifier);
-                    settingsManager.skipTimeOut = value;
-                  },
+              Row(
+                children: [
+                  Switch(
+                    value: autoNext,
+                    onChanged:
+                        (n) => ref.read(settingsProvider.notifier).autoNext = n,
+                  ),
+                  Row(
+                    children: [
+                      Text(autoNext ? "AutoSkip: On After" : "AutoSkip: Off"),
+
+                      if (autoNext) ...[
+                        NumberPicker(
+                          value: settings.skipTimeOut,
+                          minValue: 3,
+                          maxValue: 300,
+                          step: 1,
+                          itemHeight: 30,
+                          haptics: true,
+                          onChanged: (value) {
+                            var settingsManager = ref.read(
+                              settingsProvider.notifier,
+                            );
+                            settingsManager.skipTimeOut = value;
+                          },
+                        ),
+                        const Text("Seconds"),
+                      ],
+                    ],
+                  ),
+                ],
+              ),
+              if (!autoNext)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Switch(
+                      value: !settings.oneShot,
+                      onChanged:
+                          (n) =>
+                              ref.read(settingsProvider.notifier).oneShot = !n,
+                    ),
+                    Text(
+                      settings.oneShot ? "Loop mode: Off " : "Loop mode: On",
+                    ),
+                  ],
                 ),
-                const Text("seconds"),
-              ],
+              if (autoNext)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Switch(
+                      value: settings.callSolution,
+                      onChanged:
+                          (n) =>
+                              ref.read(settingsProvider.notifier).callSolution =
+                                  n,
+                    ),
+                    Text(
+                      settings.callSolution
+                          ? "Solution Call: On"
+                          : "Solution Call: Off",
+                    ),
+                  ],
+                ),
             ],
           ),
-          if (!autoNext)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Switch(
-                  value: !settings.oneShot,
-                  onChanged:
-                      (n) => ref.read(settingsProvider.notifier).oneShot = !n,
-                ),
-                Text(
-                  settings.oneShot
-                      ? "Loop mode: Off "
-                      : "Loop mode: On",
-                ),
-              ],
-            ),
-          if (autoNext)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Switch(
-                  value: settings.callSolution,
-                  onChanged:
-                      (n) =>
-                          ref.read(settingsProvider.notifier).callSolution = n,
-                ),
-                Text(
-                  settings.callSolution
-                      ? "Solution Call: Active"
-                      : "Solution Call: Inactive",
-                ),
-              ],
-            ),
         ],
       ),
     );

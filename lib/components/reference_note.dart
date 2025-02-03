@@ -44,11 +44,14 @@ class _ReferenceNoteState extends State<ReferenceNote> {
 
   @override
   Widget build(BuildContext context) {
-    return FilledButton(
-      onPressed: () => playerMagic(),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [Text("Reference Note (A1)"), Icon(Icons.music_note)],
+    return Container(
+      margin: const EdgeInsets.only(bottom:20),
+      child: OutlinedButton(
+        onPressed: () => playerMagic(),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [Text("(A1)"), Icon(Icons.music_note)],
+        ),
       ),
     );
   }

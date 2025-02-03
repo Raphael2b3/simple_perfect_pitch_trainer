@@ -1,6 +1,8 @@
 class Solution {
   List<String> intervals;
   List<String> noteNames;
+
+  List<int> noteIds;
   String scaleName;
   String rootNote;
 
@@ -9,5 +11,6 @@ class Solution {
     required this.noteNames,
     required this.scaleName,
     required this.rootNote,
+    required this.noteIds,
   });
 }

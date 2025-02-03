@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:simple_perfect_pitch_trainer/services/settings.dart';
+import 'package:simple_perfect_pitch_trainer/services/solution_player/solution_player.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task_generator.dart';
 
 import 'chord_player/chord_player_controller.dart';
@@ -23,7 +24,13 @@ class AutoSkipTimer extends _$AutoSkipTimer {
     if (!autoSkip) return null;
 
     print("AutoSkipTimer: $skipTimeOut");
-    var timer =  Timer.periodic(Duration(seconds: skipTimeOut), (t) async {
+    var timer = Timer.periodic(Duration(seconds: skipTimeOut), (t) async {
+      if (ref.read(settingsProvider).callSolution) {
+        await ref.read(chordPlayerControllerProvider.notifier).pause();
+        var task = await ref.read(taskGeneratorProvider.future);
+        await playSolution(task.solution, true, true);
+      }
+      print("AutoSkipTimer: Next Task ? ??????????????????");
       await ref.read(taskGeneratorProvider.notifier).getNextTask();
       await ref.read(chordPlayerControllerProvider.notifier).resume();
     });
@@ -32,6 +39,5 @@ class AutoSkipTimer extends _$AutoSkipTimer {
       timer.cancel();
     });
     return timer;
-
   }
 }

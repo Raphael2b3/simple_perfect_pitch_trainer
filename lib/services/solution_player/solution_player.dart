@@ -1,5 +1,6 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/solution.dart';
+
 const List<String> notes = [
   'C',
   'Db',
@@ -15,10 +16,25 @@ const List<String> notes = [
   'B',
 ];
 
-List<String> intervalsToFilenames(List<int> intervals) =>
+const List<String> intervals = [
+  "1",
+  "b2",
+  "2",
+  "b3",
+  "3",
+  "4",
+  "b5",
+  "5",
+  "b6",
+  "6",
+  "7",
+  "j7",
+];
+
+List<String> intervalsToFilenames(List<String> intervals) =>
     intervals.map((i) {
-      assert(i >= 0 && i < 12);
-      return "solutions/intervals/interval$i.mp3";
+      var j = intervals.indexOf(i);
+      return "solutions/intervals/interval$j.mp3";
     }).toList();
 
 List<String> solutionNoteFilenames(List<int> notesToPlay) =>
@@ -27,11 +43,41 @@ List<String> solutionNoteFilenames(List<int> notesToPlay) =>
       return "solutions/notes/solution_$name.mp3";
     }).toList();
 
+Future<void> playSolution(
+  Solution solution,
+  bool noteNames,
+  bool intervals,
+) async {
+  print("[[[[[[[[[[ Playing Solution ]]]]]]]]]]");
+  print("NoteNames: $noteNames");
+  print("Intervals: $intervals");
 
-Future<void> playSolution(Solution solution) async {
   var player = AudioPlayer();
-  int index = 0;
-  player.onPlayerComplete.listen((_) async {});
+  await player.setReleaseMode(ReleaseMode.stop);
+  await player.setPlayerMode(PlayerMode.mediaPlayer);
+  if (noteNames) {
+    var filenames = solutionNoteFilenames(solution.noteIds);
+    print('Notename $filenames');
+    for (var filename in filenames) {
+      print("Solution: $filename");
+      await player.setSourceAsset(filename);
+      await player.seek(Duration.zero);
+      await player.resume();
+      await player.onPlayerComplete.single;
+    }
+  }
+  if (intervals) {
+    var filenames = intervalsToFilenames(solution.intervals);
+    print("Filenames: $filenames");
+    for (var filename in filenames) {
+      print("Interval: $filename");
+      await player.setSourceAsset(filename);
+      await player.seek(Duration.zero);
+      await player.resume();
+      await player.onPlayerComplete.single;
+    }
+  }
 
-  // TODO play all solution sounds sequencially;
+  await player.dispose();
+  print("[[[[[[[[[[ Solution Played ]]]]]]]]]]");
 }
