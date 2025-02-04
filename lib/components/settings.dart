@@ -26,7 +26,6 @@ class _SettingsState extends ConsumerState<Settings> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text('Difficulty: ${(settings.numberOfExtraNotes + 1).toInt()}'),
-          Text('(To Apply Changes, Press "Next Task")',style: TextStyle(fontStyle: FontStyle.italic),),
           Slider(
             value: settings.numberOfExtraNotes,
             max: 11,
@@ -86,7 +85,7 @@ class _SettingsState extends ConsumerState<Settings> {
                               ref.read(settingsProvider.notifier).oneShot = !n,
                     ),
                     Text(
-                      settings.oneShot ? "Loop mode: Off " : "Loop mode: On",
+                      settings.oneShot ? "Loop Mode: Off " : "Loop Mode: On",
                     ),
                   ],
                 ),

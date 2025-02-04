@@ -18,6 +18,7 @@ class PlayerList extends ConsumerWidget {
       itemCount: task.value!.solution.noteNames.length,
       itemBuilder: (c, i) {
         var solutionName = task.value!.solution.noteNames[i];
+        var interval = i==0?"1":task.value!.solution.intervals[i-1];
         var isPlaying = ref.watch(
           chordPlayerControllerProvider.select((v) {
             return v.value?.playerList[i].state == PlayerState.playing;
@@ -30,7 +31,7 @@ class PlayerList extends ConsumerWidget {
                   .read(chordPlayerControllerProvider.notifier)
                   .stopSingleNote(i);
             },
-            child: Text("$solutionName Playing"),
+            child: Text("$solutionName ($interval) Playing"),
           );
         } else {
           return OutlinedButton(
@@ -40,7 +41,7 @@ class PlayerList extends ConsumerWidget {
                   .resumeSingleNote(i);
               ref.read(settingsProvider.notifier).autoNext = false;
             },
-            child: Text("$solutionName Paused"),
+            child: Text("$solutionName ($interval) Paused"),
           );
         }
       },

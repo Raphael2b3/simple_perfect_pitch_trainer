@@ -105,7 +105,6 @@ class TaskGenerator extends _$TaskGenerator {
       noteNames: noteNames,
       intervals: usedIntervals,
       scaleName: scale.name,
-      rootNote: noteNames[0],
       noteIds: notes,
     );
     var newTask = Task(notes: notes, solution: solution);

@@ -23,7 +23,6 @@ class Solution extends ConsumerWidget {
     );
 
     var task = ref.watch(taskGeneratorProvider);
-    var rootNote = task.value?.solution.rootNote;
     var scaleName = task.value?.solution.scaleName;
 
     Widget child =
@@ -42,16 +41,6 @@ class Solution extends ConsumerWidget {
             : Column(
               children: [
                 const ReferenceNote(),
-                FilledButton(
-                  onPressed: () async {
-                    await ref
-                        .read(chordPlayerControllerProvider.notifier)
-                        .pause();
-                    var task = await ref.read(taskGeneratorProvider.future);
-                    await playSolution(task.solution, true, true);
-                  },
-                  child: Text("Play Solution"),
-                ),
                 FilledButton(
                   onPressed: () {
                     uiManager.solutionRevealed = true;

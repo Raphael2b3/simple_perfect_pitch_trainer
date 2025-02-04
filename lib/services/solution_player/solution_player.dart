@@ -16,7 +16,7 @@ const List<String> notes = [
   'B',
 ];
 
-const List<String> intervals = [
+const List<String> INTERVALS = [
   "1",
   "b2",
   "2",
@@ -33,7 +33,9 @@ const List<String> intervals = [
 
 List<String> intervalsToFilenames(List<String> intervals) =>
     intervals.map((i) {
-      var j = intervals.indexOf(i);
+      print(i);
+      print(INTERVALS);
+      var j = INTERVALS.indexOf(i);
       return "solutions/intervals/interval$j.mp3";
     }).toList();
 
@@ -43,12 +45,9 @@ List<String> solutionNoteFilenames(List<int> notesToPlay) =>
       return "solutions/notes/solution_$name.mp3";
     }).toList();
 
-Future<void> playSolution(
-  Solution solution,
-  bool noteNames,
-  bool intervals,
-) async {
-
+Future<void> playSolution(Solution solution,
+    bool noteNames,
+    bool intervals,) async {
   var player = AudioPlayer();
   player.onPlayerComplete.listen((e) => 0);
   await player.setReleaseMode(ReleaseMode.stop);
