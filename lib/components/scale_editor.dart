@@ -31,16 +31,22 @@ class _ScaleEditorState extends ConsumerState<ScaleEditor> {
   late Set<String> selection2 = {};
   late Set<String> selection3 = {};
   String name = "";
+  ScaleConfig? scaleToEdit;
 
   void onSave() {
-    var selection = [...selection1, ...selection2, ...selection3];
+    var selection = selection1.union(selection2).union(selection3).toList();
     var newScale = ScaleConfig(
       name: name,
       values: selection,
       isCustom: true,
       isActive: true,
     );
-    ref.read(scaleManagerProvider.notifier).createScale(newScale);
+    var scaleManager = ref.read(scaleManagerProvider.notifier);
+    if (scaleToEdit == null) {
+      scaleManager.createScale(newScale);
+    } else {
+      scaleManager.updateScale(newScale, oldName: scaleToEdit!.name);
+    }
     ref.read(uiStateControllerProvider.notifier).scaleEditorActivated = false;
   }
 
@@ -50,6 +56,14 @@ class _ScaleEditorState extends ConsumerState<ScaleEditor> {
 
   @override
   Widget build(BuildContext context) {
+    scaleToEdit = ref.watch(uiStateControllerProvider).scaleToEdit;
+
+    if (scaleToEdit != null) {
+      selection1 = scaleToEdit!.values.toSet();
+      selection2 = scaleToEdit!.values.toSet();
+      selection3 = scaleToEdit!.values.toSet();
+      name = scaleToEdit!.name;
+    }
     return Expanded(
       child: Column(
         children: [
@@ -116,12 +130,14 @@ class _ScaleEditorState extends ConsumerState<ScaleEditor> {
                       return 'Please enter some text';
                     }
                     if (ref
-                        .read(scaleManagerProvider.notifier)
-                        .isNameTaken(value)) {
+                            .read(scaleManagerProvider.notifier)
+                            .isNameTaken(value) &&
+                        scaleToEdit?.name != value) {
                       return "Name already taken. Please choose another one.";
                     }
                     return null;
                   },
+                  initialValue: name,
                   onSaved: (s) => onSave(),
                   autovalidateMode: AutovalidateMode.always,
                   maxLines: 1,

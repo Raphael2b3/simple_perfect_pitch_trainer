@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:simple_perfect_pitch_trainer/services/auto_skip_timer.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import 'components/home_page.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  WakelockPlus.enable();
+
   runApp(ProviderScope(child: const MyApp()));
 }
 

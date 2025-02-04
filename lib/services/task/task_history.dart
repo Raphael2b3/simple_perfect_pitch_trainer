@@ -30,7 +30,6 @@ class TaskHistory {
     historyIndex = 0;
     if (history.length > 50) {
       history.removeAt(0);
-      print("Removed oldest history entry");
     }
   }
 }

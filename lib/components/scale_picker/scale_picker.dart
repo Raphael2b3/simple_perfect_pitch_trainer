@@ -41,10 +41,8 @@ class ScalePicker extends ConsumerWidget {
                 ),
                 FilledButton(
                   onPressed: () {
-                    print("test");
                     ref.read(uiStateControllerProvider.notifier).scaleListRevealed = false;
-                            print(ref.read(uiStateControllerProvider).scaleEditorActivated);
-                  },
+                           },
                   child: const Text("Save"),
                 ),
               ],

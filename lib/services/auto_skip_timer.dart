@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:simple_perfect_pitch_trainer/services/settings.dart';
 import 'package:simple_perfect_pitch_trainer/services/solution_player/solution_player.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task_generator.dart';
+import 'package:simple_perfect_pitch_trainer/services/ui_state_controller.dart';
 
 import 'chord_player/chord_player_controller.dart';
 
@@ -13,26 +14,24 @@ part 'auto_skip_timer.g.dart';
 // A shared state that can be accessed by multiple widgets at the same time.
 @riverpod
 class AutoSkipTimer extends _$AutoSkipTimer {
-  Timer? timer;
 
   @override
   Timer? build() {
-    print("Building Timer");
     var (autoSkip, skipTimeOut) = ref.watch(
       settingsProvider.select((e) => (e.autoNext, e.skipTimeOut)),
     );
     if (!autoSkip) return null;
+    ref.watch(taskGeneratorProvider);
 
-    print("AutoSkipTimer: $skipTimeOut");
-    var timer = Timer.periodic(Duration(seconds: skipTimeOut), (t) async {
+    var timer = Timer(Duration(seconds: skipTimeOut), () async {
       if (ref.read(settingsProvider).callSolution) {
         await ref.read(chordPlayerControllerProvider.notifier).pause();
         var task = await ref.read(taskGeneratorProvider.future);
         await playSolution(task.solution, true, true);
       }
-      print("AutoSkipTimer: Next Task ? ??????????????????");
       await ref.read(taskGeneratorProvider.notifier).getNextTask();
       await ref.read(chordPlayerControllerProvider.notifier).resume();
+      ref.read(uiStateControllerProvider.notifier).solutionRevealed = false;
     });
 
     ref.onDispose(() {

@@ -23,9 +23,14 @@ class ScaleManager extends _$ScaleManager {
   Future<void> updateScale(ScaleConfig newConfig, {String? oldName}) async {
     if (oldName == newConfig.name) oldName = null;
 
-    var overriddenConfig = state.value![newConfig.name]!;
+    var overriddenConfig = state.value?[newConfig.name];
     // active state should not be changed if the config is not custom
-    if (overriddenConfig.values != newConfig.values && !overriddenConfig.isCustom) return;
+    if (overriddenConfig != null &&
+        overriddenConfig.values != newConfig.values &&
+        !overriddenConfig.isCustom) {
+      return;
+    }
+
     if (oldName != null && isNameTaken(newConfig.name)) return;
 
     await scaleStorage.updateScaleConfig(newConfig);

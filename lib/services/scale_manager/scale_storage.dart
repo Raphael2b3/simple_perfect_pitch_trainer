@@ -19,6 +19,22 @@ class ScaleStorage {
       "7",
       "j7",
     ],
+    "1": ["1"],
+    "b2": ["1", "b2"],
+    "b3": ["1", "3b"],
+    "3": ["1", "3"],
+    "4": ["1", "4"],
+    "b5": ["1", "b5"],
+    "5": ["1", "5"],
+    "b6": ["1", "b6"],
+    "6": ["1", "6"],
+    "7": ["1", "7"],
+    "j7": ["1", "j7"],
+    "Chord m7": ["1","b3","5","7"],
+    "Chord j7": ["1","3","5","j7"],
+    "Chord 7": ["1","3","5","7"],
+    "Chord m7b5": ["1","b3","b5","7"],
+    "Full Diminished": ["1","b3","b5","6"],
     'Ionian': ["1", "2", "3", "4", "5", "6", "j7"],
     'Dorian': ["1", "2", "b3", "4", "5", "6", "7"],
     'Phrygian': ["1", "b2", "b3", "4", "5", "b6", "7"],
@@ -39,7 +55,6 @@ class ScaleStorage {
   Map<String, ScaleConfig>? scaleConfigs;
 
   Future init() async {
-    print("stop");
     var (customConfigs, activeConfigs) = await _loadConfigs();
     var newScaleConfigs = Map.fromEntries(
       customConfigs.keys
@@ -74,8 +89,6 @@ class ScaleStorage {
 
   /// Loads the customConfigs and activeConfigs from local storage.
   Future<(Map<String, List<String>>, Map<String, bool>)> _loadConfigs() async {
-    print("Loading Configs");
-
     final prefs = await SharedPreferences.getInstance();
 
     final jsonString = prefs.getString(_storageKey);
@@ -97,7 +110,7 @@ class ScaleStorage {
 
   /// Updates a specific key with new values and stores the updated customConfigs in local storage.
   Future<void> updateScaleConfig(ScaleConfig newConfig) async {
-    var old = scaleConfigs![newConfig.name];
+    var old = scaleConfigs?[newConfig.name];
     if (old != null && old.values != newConfig.values && !old.isCustom) return;
     scaleConfigs![newConfig.name] = newConfig;
     await _saveConfigs();
@@ -106,7 +119,7 @@ class ScaleStorage {
   /// Deletes a specific key from the customConfigs and updates local storage, unless it is undeletable.
   Future<void> deleteConfig(String? key) async {
     if (key == null) return;
-    var old = scaleConfigs![key];
+    var old = scaleConfigs?[key];
     if (old != null && !old.isCustom) return;
     scaleConfigs!.remove(key);
     await _saveConfigs();
@@ -129,6 +142,5 @@ class ScaleStorage {
       'activeConfigs': activeConfigs,
     });
     await prefs.setString(_storageKey, jsonString);
-    print("saved $jsonString");
   }
 }

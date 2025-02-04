@@ -48,36 +48,27 @@ Future<void> playSolution(
   bool noteNames,
   bool intervals,
 ) async {
-  print("[[[[[[[[[[ Playing Solution ]]]]]]]]]]");
-  print("NoteNames: $noteNames");
-  print("Intervals: $intervals");
 
   var player = AudioPlayer();
+  player.onPlayerComplete.listen((e) => 0);
   await player.setReleaseMode(ReleaseMode.stop);
   await player.setPlayerMode(PlayerMode.mediaPlayer);
   if (noteNames) {
     var filenames = solutionNoteFilenames(solution.noteIds);
-    print('Notename $filenames');
     for (var filename in filenames) {
-      print("Solution: $filename");
       await player.setSourceAsset(filename);
-      await player.seek(Duration.zero);
       await player.resume();
-      await player.onPlayerComplete.single;
+      await player.onPlayerComplete.first;
     }
   }
   if (intervals) {
     var filenames = intervalsToFilenames(solution.intervals);
-    print("Filenames: $filenames");
     for (var filename in filenames) {
-      print("Interval: $filename");
       await player.setSourceAsset(filename);
-      await player.seek(Duration.zero);
       await player.resume();
-      await player.onPlayerComplete.single;
+      await player.onPlayerComplete.first;
     }
   }
 
   await player.dispose();
-  print("[[[[[[[[[[ Solution Played ]]]]]]]]]]");
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_config.dart';
 import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_manager.dart';
+import 'package:simple_perfect_pitch_trainer/services/ui_state_controller.dart';
 
 class ScaleItem extends ConsumerWidget {
   final ScaleConfig config;
@@ -10,7 +11,6 @@ class ScaleItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
     return Row(
       children: [
         Checkbox(
@@ -24,8 +24,9 @@ class ScaleItem extends ConsumerWidget {
         if (config.isCustom) ...[
           IconButton(
             onPressed: () {
-              //TODO show dialog to edit scale
-
+              var uiStateManager = ref.read(uiStateControllerProvider.notifier);
+              uiStateManager.scaleToEdit = config;
+              uiStateManager.scaleEditorActivated = true;
             },
             icon: Icon(Icons.edit),
           ),

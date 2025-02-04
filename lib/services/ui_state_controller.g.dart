@@ -6,7 +6,7 @@ part of 'ui_state_controller.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$uiStateControllerHash() => r'a686834bb6d7772b781efdf9ab230e39a4e1f887';
+String _$uiStateControllerHash() => r'61992611074905509eda791b8d4085f52f86b072';
 
 /// See also [UiStateController].
 @ProviderFor(UiStateController)

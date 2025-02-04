@@ -114,8 +114,10 @@ class TaskGenerator extends _$TaskGenerator {
   }
 
   List<String> notesToName(List<int> notesToPlay) =>
-      notesToPlay.map((i) {
-        var octave = ((i / 12).floor() % 3) + 1;
-        return "${notes[i % 12]}$octave";
+      notesToPlay.indexed.map((v) {
+        var (index, value) = v;
+        if (index == 0) return "${notes[value % 12]}1";
+        var octave = ((value / 12).floor() % 2) + 2;
+        return "${notes[value % 12]}$octave";
       }).toList();
 }

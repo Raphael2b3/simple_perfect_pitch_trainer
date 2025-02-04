@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_config.dart';
 
 part 'ui_state_controller.g.dart';
 
@@ -8,6 +9,7 @@ class UIState {
   bool scaleListRevealed = false;
   bool scaleEditorActivated = false;
   bool solutionExpanded = true;
+  ScaleConfig? scaleToEdit;
 }
 
 // A shared state that can be accessed by multiple widgets at the same time.
@@ -22,14 +24,17 @@ class UiStateController extends _$UiStateController {
     ref.notifyListeners();
   }
 
+  set scaleToEdit(ScaleConfig? value) {
+    state.scaleToEdit = value;
+  }
+
   set scaleListRevealed(bool value) {
     state.scaleListRevealed = value;
     if (value) {
       state.solutionRevealed = false;
       state.scaleEditorActivated = false;
       state.solutionExpanded = false;
-    }
-    else{
+    } else {
       state.solutionExpanded = true;
     }
     ref.notifyListeners();
