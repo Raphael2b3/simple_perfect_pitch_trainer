@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:simple_perfect_pitch_trainer/components/scale_picker/scale_item.dart';
-import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_config.dart';
 import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_manager.dart';
 import 'package:simple_perfect_pitch_trainer/components/scale_editor.dart';
 import 'package:simple_perfect_pitch_trainer/services/ui_state_controller.dart';

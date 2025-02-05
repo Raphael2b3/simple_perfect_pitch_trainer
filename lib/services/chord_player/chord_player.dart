@@ -4,15 +4,14 @@ class ChordPlayer {
   List<AudioPlayer> playerList;
   bool oneShot = false;
   void Function()? onPlayerComplete;
-  ChordPlayer(this.playerList, this.onPlayerComplete,this.oneShot) {
 
+  ChordPlayer(this.playerList, this.onPlayerComplete, this.oneShot) {
     for (var player in playerList) {
-      player.onPlayerComplete.listen((event)async {
+      player.onPlayerComplete.listen((event) async {
         if (!oneShot) {
           await player.seek(Duration.zero);
           await player.resume();
-        }
-        else{
+        } else {
           onPlayerComplete?.call();
         }
       });
@@ -24,32 +23,22 @@ class ChordPlayer {
 
   static Future<ChordPlayer> create(
     List<String> notesFilenames,
-    List<String> solutionFilenames,
-      void Function()? onPlayerComplete,
-      bool onShot,
+    void Function()? onPlayerComplete,
+    bool oneShot,
   ) async {
     List<AudioPlayer> newPlayers = [];
-
     for (var filename in notesFilenames) {
       var newPlayer = AudioPlayer();
-      await newPlayer.setPlayerMode(PlayerMode.mediaPlayer);
       await newPlayer.setSourceAsset(filename);
       await newPlayer.setReleaseMode(ReleaseMode.stop);
       newPlayers.add(newPlayer);
     }
-
-    var player = ChordPlayer(newPlayers, onPlayerComplete,onShot);
+    var player = ChordPlayer(newPlayers, onPlayerComplete, oneShot);
     await player.play();
     return player;
   }
 
   Future<void> play() async {
-    for (var player in playerList) {
-      await player.resume();
-    }
-  }
-
-  Future<void> callSolution() async {
     for (var player in playerList) {
       await player.resume();
     }

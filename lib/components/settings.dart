@@ -45,13 +45,16 @@ class _SettingsState extends ConsumerState<Settings> {
                 children: [
                   Switch(
                     value: autoNext,
-                    onChanged:
-                        (n) => ref.read(settingsProvider.notifier).autoNext = n,
+                    onChanged: (n) async {
+                      ref.read(settingsProvider.notifier).autoNext = n;
+                      if (n) {
+                       await ref.read(taskGeneratorProvider.notifier).getNextTask();
+                      }
+                    },
                   ),
                   Row(
                     children: [
                       Text(autoNext ? "AutoSkip: On After" : "AutoSkip: Off"),
-
                       if (autoNext) ...[
                         NumberPicker(
                           value: settings.skipTimeOut,

@@ -7,7 +7,7 @@ part of 'chord_player_controller.dart';
 // **************************************************************************
 
 String _$chordPlayerControllerHash() =>
-    r'c7d02c8204987dcacc889b94a822494f3c8fca3e';
+    r'354b7bd644b371877eadfa595e55ed3c83f23bd4';
 
 /// See also [ChordPlayerController].
 @ProviderFor(ChordPlayerController)

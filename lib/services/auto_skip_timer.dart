@@ -24,13 +24,13 @@ class AutoSkipTimer extends _$AutoSkipTimer {
     ref.watch(taskGeneratorProvider);
 
     var timer = Timer(Duration(seconds: skipTimeOut), () async {
+
       if (ref.read(settingsProvider).callSolution) {
         await ref.read(chordPlayerControllerProvider.notifier).pause();
         var task = await ref.read(taskGeneratorProvider.future);
         await playSolution(task.solution, true, true);
       }
       await ref.read(taskGeneratorProvider.notifier).getNextTask();
-      await ref.read(chordPlayerControllerProvider.notifier).resume();
       ref.read(uiStateControllerProvider.notifier).solutionRevealed = false;
     });
 

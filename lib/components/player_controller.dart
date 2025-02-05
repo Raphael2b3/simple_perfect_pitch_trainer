@@ -22,7 +22,6 @@ class PlayerController extends ConsumerWidget {
             ref.read(uiStateControllerProvider.notifier).solutionRevealed =
                 false;
             ref.read(taskGeneratorProvider.notifier).getPreviousTask();
-            await ref.read(chordPlayerControllerProvider.notifier).resume();
           },
           child: const Text("Previous"),
         ),
@@ -48,7 +47,6 @@ class PlayerController extends ConsumerWidget {
             ref.read(uiStateControllerProvider.notifier).solutionRevealed =
                 false;
             await ref.read(taskGeneratorProvider.notifier).getNextTask();
-            await ref.read(chordPlayerControllerProvider.notifier).resume();
           },
           child: const Text("Next Task"),
         ),

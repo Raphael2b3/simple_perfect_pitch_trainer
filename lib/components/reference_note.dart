@@ -23,8 +23,8 @@ class _ReferenceNoteState extends State<ReferenceNote> {
     if (player.state == PlayerState.playing) {
       await player.pause();
     } else {
-      player.seek(Duration.zero);
-      player.resume();
+      await player.seek(Duration.zero);
+      await player.resume();
     }
   }
 

@@ -40,7 +40,6 @@ class ChordPlayerController extends _$ChordPlayerController {
     var settings = ref.read(settingsProvider);
     var chordPlayer = await ChordPlayer.create(
       notesToFilenames(task.notes),
-      [],
       () => ref.notifyListeners(),
       settings.oneShot && !settings.autoNext,
     );

@@ -6,7 +6,7 @@ part of 'auto_skip_timer.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$autoSkipTimerHash() => r'8a9d4ea1f66b4113834c2aace12e2d8e0de799b7';
+String _$autoSkipTimerHash() => r'89dab0fa6556a362ca9636a6b8f441209942fdc4';
 
 /// See also [AutoSkipTimer].
 @ProviderFor(AutoSkipTimer)
