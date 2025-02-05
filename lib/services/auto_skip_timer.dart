@@ -1,11 +1,9 @@
 import 'dart:async';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:simple_perfect_pitch_trainer/services/settings.dart';
 import 'package:simple_perfect_pitch_trainer/services/solution_player/solution_player.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task_generator.dart';
-import 'package:simple_perfect_pitch_trainer/services/ui_state_controller.dart';
 
 import 'chord_player/chord_player_controller.dart';
 
@@ -31,7 +29,7 @@ class AutoSkipTimer extends _$AutoSkipTimer {
         await playSolution(task.solution, true, true);
       }
       await ref.read(taskGeneratorProvider.notifier).getNextTask();
-      ref.read(uiStateControllerProvider.notifier).solutionRevealed = false;
+
     });
 
     ref.onDispose(() {

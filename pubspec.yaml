@@ -39,8 +39,9 @@ dependencies:
   riverpod_annotation: ^2.6.1
   numberpicker: ^2.1.2
   shared_preferences: ^2.3.5
+  audioplayers_android: 5.0.0
   wakelock_plus: ^1.2.10
-
+  flutter_launcher_icons: ^0.14.3
 dev_dependencies:
   flutter_test:
     sdk: flutter

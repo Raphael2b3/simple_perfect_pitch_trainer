@@ -1,10 +1,5 @@
-import 'dart:math';
 
-import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:simple_perfect_pitch_trainer/services/chord_player/chord_player_controller.dart';
-import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_manager.dart';
 
 part 'settings.g.dart';
 

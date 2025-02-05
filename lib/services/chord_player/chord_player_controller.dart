@@ -1,11 +1,6 @@
 import 'dart:async';
-
-import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_manager.dart';
 import 'package:simple_perfect_pitch_trainer/services/settings.dart';
-import 'package:simple_perfect_pitch_trainer/services/task/task.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task_generator.dart';
 
 import 'chord_player.dart';
@@ -39,7 +34,7 @@ class ChordPlayerController extends _$ChordPlayerController {
     );
     var settings = ref.read(settingsProvider);
     var chordPlayer = await ChordPlayer.create(
-      notesToFilenames(task.notes),
+      notesToFilenames(task.solution.noteNames),
       () => ref.notifyListeners(),
       settings.oneShot && !settings.autoNext,
     );
@@ -81,11 +76,9 @@ class ChordPlayerController extends _$ChordPlayerController {
     ref.notifyListeners();
   }
 
-  List<String> notesToFilenames(List<int> notesToPlay) =>
+  List<String> notesToFilenames(List<String> notesToPlay) =>
       notesToPlay.map((i) {
-        var name = notes[i % 12];
-        var octave = ((i / 12).floor() % 3) + 1;
-        return "notes/$name$octave.mp3";
+        return "notes/$i.mp3";
       }).toList();
 
   Future<void> resume() async {

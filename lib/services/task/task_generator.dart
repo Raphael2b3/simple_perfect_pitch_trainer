@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_config.dart';
 import 'package:simple_perfect_pitch_trainer/services/settings.dart';
@@ -7,6 +6,7 @@ import 'package:simple_perfect_pitch_trainer/services/task/solution.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task_history.dart';
 import 'package:simple_perfect_pitch_trainer/services/scale_manager/scale_manager.dart';
+import 'package:simple_perfect_pitch_trainer/services/ui_state_controller.dart';
 
 part "task_generator.g.dart";
 
@@ -75,11 +75,15 @@ class TaskGenerator extends _$TaskGenerator {
     return actives[i];
   }
 
-  void getPreviousTask() =>
-      state = AsyncValue.data(taskHistory.getPreviousTask());
+  void getPreviousTask() {
+    state = AsyncValue.data(taskHistory.getPreviousTask());
+    ref.read(uiStateControllerProvider.notifier).solutionRevealed = false;
+  }
 
-  Future<void> getNextTask() async =>
-      state = AsyncValue.data(taskHistory.getNextTask() ?? await getNewTask());
+  Future<void> getNextTask() async {
+    state = AsyncValue.data(taskHistory.getNextTask() ?? await getNewTask());
+    ref.read(uiStateControllerProvider.notifier).solutionRevealed = false;
+  }
 
   Future<Task> getNewTask() async {
     var numberOfExtraNotes = ref.read(settingsProvider).numberOfExtraNotes;
@@ -95,7 +99,8 @@ class TaskGenerator extends _$TaskGenerator {
 
     while (notes.length < maxPossibleNotesPlayed) {
       int randomNote = setOfNotes[random.nextInt(setOfNotes.length)];
-      int randomOctave = 12 + random.nextInt(2) * 12;
+      int randomOctave = random.nextInt(2) * 12;
+      if (randomNote < 12) randomOctave += 12;
       int newNote = rootNote + randomOctave + randomNote;
       usedIntervals.add(intervalList[randomNote]);
       if (!notes.contains(newNote)) notes.add(newNote);
@@ -115,7 +120,12 @@ class TaskGenerator extends _$TaskGenerator {
   List<String> notesToName(List<int> notesToPlay) =>
       notesToPlay.indexed.map((v) {
         var (index, value) = v;
-        var octave = index==0?1:value>=24?3:2;
+        var octave =
+            index == 0
+                ? 1
+                : value >= 24
+                ? 3
+                : 2;
         return "${notes[value % 12]}$octave";
       }).toList();
 }

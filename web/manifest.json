@@ -3,7 +3,7 @@
     "short_name": "simple_perfect_pitch_trainer",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
+    "background_color": "#a312e6",
     "theme_color": "#0175C2",
     "description": "An app that helps you develope perfect pitch",
     "orientation": "portrait-primary",

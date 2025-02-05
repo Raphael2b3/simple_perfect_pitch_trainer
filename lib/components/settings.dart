@@ -1,10 +1,8 @@
-import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:simple_perfect_pitch_trainer/components/scale_picker/scale_picker.dart';
-import 'package:simple_perfect_pitch_trainer/services/chord_player/chord_player_controller.dart';
 import 'package:simple_perfect_pitch_trainer/services/settings.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task_generator.dart';
 
@@ -34,6 +32,9 @@ class _SettingsState extends ConsumerState<Settings> {
             label: (settings.numberOfExtraNotes + 1).round().toString(),
             onChanged: (v) {
               ref.read(settingsProvider.notifier).numberOfExtraNotes = v;
+            },
+            onChangeEnd: (v) async {
+              await ref.read(taskGeneratorProvider.notifier).getNextTask();
             },
           ),
           ScalePicker(),

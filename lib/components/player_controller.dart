@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:simple_perfect_pitch_trainer/services/chord_player/chord_player_controller.dart';
 import 'package:simple_perfect_pitch_trainer/services/settings.dart';
 import 'package:simple_perfect_pitch_trainer/services/task/task_generator.dart';
-import 'package:simple_perfect_pitch_trainer/services/ui_state_controller.dart';
 
 class PlayerController extends ConsumerWidget {
   const PlayerController({super.key});
@@ -19,8 +18,6 @@ class PlayerController extends ConsumerWidget {
       children: [
         TextButton(
           onPressed: () async {
-            ref.read(uiStateControllerProvider.notifier).solutionRevealed =
-                false;
             ref.read(taskGeneratorProvider.notifier).getPreviousTask();
           },
           child: const Text("Previous"),
@@ -44,8 +41,6 @@ class PlayerController extends ConsumerWidget {
           ),
         TextButton(
           onPressed: () async {
-            ref.read(uiStateControllerProvider.notifier).solutionRevealed =
-                false;
             await ref.read(taskGeneratorProvider.notifier).getNextTask();
           },
           child: const Text("Next Task"),
